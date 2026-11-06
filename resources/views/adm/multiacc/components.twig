@@ -1,0 +1,68 @@
+{% macro formField(label, placeholder, formName, sessionErrorFieldName) %}
+  <div class="form-group">
+    <label>
+      <b>{{ label }}</b>
+      <input
+          type="text" class="form-control {{ session_get('errors').has(sessionErrorFieldName) ? 'is-invalid' }}"
+          placeholder="{{ placeholder }}"
+          name="{{ formName }}"
+          value="{{ app.request.old(sessionErrorFieldName) }}">
+      {% for error in session_get('errors').get(sessionErrorFieldName) %}
+        <span class="invalid-feedback">{{ error }}</span>
+      {% endfor %}
+    </label>
+  </div>
+{% endmacro %}
+
+{% macro table(emptyText, items, fields, rowActionsTemplate) %}
+  {% if items is not empty %}
+    <table class="table table-striped mb-0">
+      <thead>
+      <tr>
+        {% for field in fields %}
+          <th style="white-space:nowrap;">
+            {{ field.labelIcon ? icon(field.labelIcon) }}
+            {{ field.label }}
+          </th>
+        {% endfor %}
+      </tr>
+      </thead>
+      <tbody>
+      {% for item in items %}
+        <tr>
+          {% for field in fields %}
+            <td style="{{ field.wrap ? 'white-space:nowrap;' }}">
+              {% if field.style == 'rowActions' %}
+                {% import rowActionsTemplate as rowActionsRenderer %}
+                {{ rowActionsRenderer.componentsTableRowActions_MagicValue(item) }}
+              {% else %}
+                {% set value = nested_attribute(item, field.key) %}
+                {% if value is null %}
+                  <span class="text-muted">{{ field.default }}</span>
+                {% else %}
+                  {{ field.icon ? icon(field.icon) }}
+                  {% if field.style == 'image' %}
+                    <img class="{{ field.styleClass }}" src="{{ value }}" alt="{{ field.label }}">
+                  {% elseif field.style == 'code' %}
+                    <code>{{ value }}</code>
+                  {% elseif field.style == 'number' %}
+                    {{ value|number_format }}
+                  {% else %}
+                    {{ value }}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="list-group list-group-flush">
+      <div class="list-group-item text-center text-muted">
+        {{ emptyText }}
+      </div>
+    </div>
+  {% endif %}
+{% endmacro %}

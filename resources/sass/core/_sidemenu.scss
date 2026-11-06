@@ -1,0 +1,60 @@
+@charset "UTF-8";
+
+.side-menu {
+  padding: 0;
+  list-style-type: none;
+
+  > li {
+    position: relative;
+
+    &.divider {
+      margin-bottom: 4px;
+      margin-top: 4px;
+      border-bottom: 1px solid $card-border-color;
+    }
+
+    .side-menu-item,
+    > a {
+      display: block;
+      opacity: .8;
+      @include text-truncate;
+
+      i {
+        font-size: 15px;
+        margin-right: 5px;
+      }
+    }
+
+    .side-menu-item {
+      padding: 3px 0;
+    }
+
+    > a {
+      cursor: pointer;
+      padding: 6px 0;
+
+      &:focus {
+        text-decoration: none;
+        outline: none;
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover:before {
+      opacity: 1;
+    }
+  }
+}
+
+.btn-subscribe {
+  &.on .fa-bell {
+    color: lighten($alt-link-hover-color, 5%);
+  }
+
+  small {
+    color: $gray-light;
+  }
+}

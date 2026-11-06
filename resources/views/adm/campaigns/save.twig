@@ -1,0 +1,9 @@
+{% extends 'adm.base' %}
+{% block title %}Edycja kampanii {{ parent() }}{% endblock %}
+
+{% block container %}
+  <div class="card">
+    <div class="card-header">Kampania reklamowa</div>
+    <div class="card-body">{{ form(form) }}</div>
+  </div>
+{% endblock %}

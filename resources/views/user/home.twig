@@ -1,0 +1,55 @@
+{% extends 'user.base' %}
+
+{% from 'reputationBar.reputationBar' import reputationBar %}
+
+{% block title %}
+  Moje konto
+  {{ parent() }}
+{% endblock %}
+
+{% block wrapper %}
+  <div class="row">
+    <div class="col-8">
+      <div id="box-start" class="neon-tile neon-rounded p-3">
+        <div class="d-flex">
+          <div id="js-user" class="d-none d-sm-block me-3">
+            <vue-thumbnail
+                :url="url"
+                :only-image="true"
+                upload-url="{{ route('user.photo.upload') }}"
+                @upload="setPhoto"
+                @delete="deletePhoto"
+            ></vue-thumbnail>
+          </div>
+          <div class="flex-grow-1" style="min-width:0;">
+            <ul class="metadata list-inline">
+              <li class="list-inline-item" title="Ostatnia wizyta">
+                {{ icon('userLastVisitDate') }}
+                {{ user('visited_at')|format_date }}
+              </li>
+              <li class="list-inline-item" title="Twoje aktualne IP">
+                {{ icon('userIpAddress') }}
+                {{ ip }}
+              </li>
+              <li class="list-inline-item" title="Data rejestracji">
+                {{ icon('userRegisterDate') }}
+                {{ user('created_at')|format_date }}
+              </li>
+              <li class="list-inline-item" title="Liczba wizyt">
+                {{ icon('userVisits') }}
+                {{ user('visits')|number_format(0, ',', ' ') }}
+              </li>
+            </ul>
+            <div class="mt-2">
+              <div class="d-flex justify-content-between mb-1">
+                <div>{{ icon('userReputation') }} Twoja reputacja</div>
+                <b>#{{ rank.rank }}/{{ total_users }}</b>
+              </div>
+              {{ reputationBar(user('reputation'), rank.percentage) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,201 @@
+@layer properties, theme, base, components, utilities;
+
+@import "tailwindcss";
+@import "../Icon/internal/fontAwesomeIcons.css";
+
+@custom-variant dark (&:where(.dark *, :host(.dark) *));
+
+:root.dark, :host(.dark) {
+  --color-body: #121314;
+  --color-on-primary: #0a0d10;
+  --color-tile-border: #2b2e30;
+  --color-tag: #0a0d10;
+  --color-banner-gradient: #0d5c28;
+
+  --color-neutral2-025: #0a0a0b;
+  --color-neutral2-050: #121314;
+  --color-neutral2-100: #181a1b;
+  --color-neutral2-200: #2b2e30;
+  --color-neutral2-300: #44474b;
+  --color-neutral2-400: #5c6166;
+  --color-neutral2-500: #767d84;
+  --color-neutral2-600: #91969c;
+  --color-neutral2-700: #acb0b4;
+  --color-neutral2-800: #c7c9cc;
+  --color-neutral2-900: #e4e6e7;
+  --color-neutral2-950: #ffffff;
+
+  --color-green2-100: #001407;
+  --color-green2-200: #012f0d;
+  --color-green2-300: #014718;
+  --color-green2-400: #016a24;
+  --color-green2-500: #00a538;
+  --color-green2-600: #54c173;
+  --color-green2-700: #a8daaa;
+  --color-green2-800: #bdd5c3;
+  --color-green2-900: #e7f7e6;
+}
+
+@theme {
+  --font-sans: "Inter Tight", sans-serif;
+  --color-*: initial;
+  --color-white: white;
+  --color-black: black;
+
+  --color-neutral2-025: #eaecf1;
+  --color-neutral2-050: #f5f7fa;
+  --color-neutral2-100: #ffffff;
+  --color-neutral2-200: #dde4ea;
+  --color-neutral2-300: #acb0b4;
+  --color-neutral2-400: #91969c;
+  --color-neutral2-500: #5c6066;
+  --color-neutral2-600: #44474b;
+  --color-neutral2-700: #2b2e30;
+  --color-neutral2-800: #181a1b;
+  --color-neutral2-900: #121314;
+  --color-neutral2-950: #0a0d10;
+
+  --color-green-050: #e7f7e6;
+  --color-green-500: #00a538;
+  --color-green-700: #016a24;
+  --color-green-800: #014718;
+  --color-green-950: #001407;
+
+  --color-green2-100: #e7f7e6;
+  --color-green2-200: #bdd5c3;
+  --color-green2-300: #a8daaa;
+  --color-green2-400: #54c173;
+  --color-green2-500: #00a538;
+  --color-green2-600: #016a24;
+  --color-green2-700: #014718;
+  --color-green2-800: #012f0d;
+  --color-green2-900: #001407;
+
+  --color-red-500: #e11d48;
+
+  --color-blue-050: #eff5ff;
+  --color-blue-200: #bfdbfe;
+  --color-blue-600: #2563eb;
+
+  --color-body: #f0f2f5;
+  --color-primary: var(--color-green-500);
+  --color-on-primary: #ffffff;
+  --color-tile: var(--color-neutral2-100);
+  --color-tile-nested: var(--color-neutral2-050);
+  --color-tile-border: #e4e6e7;
+  --color-tag: #dde4ea;
+  --color-banner-gradient: #bbe7ca;
+
+  --text-*: initial;
+  --text-xs: 0.625rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.25rem;
+  --text-3xl: 1.5rem;
+  --text-4xl: 2.0rem;
+
+  --text-xs--line-height: calc(1 / 0.625);
+  --text-sm--line-height: calc(1 / 0.75);
+  --text-base--line-height: calc(1.25 / 0.875);
+  --text-lg--line-height: calc(1.5 / 1);
+  --text-xl--line-height: calc(1.75 / 1.125);
+  --text-2xl--line-height: calc(1.75 / 1.25);
+  --text-3xl--line-height: calc(2 / 1.5);
+  --text-4xl--line-height: calc(2.5 / 2.0);
+
+  --breakpoint-2xs: 22rem; /* iPhoneSe */
+  --breakpoint-xs: 25rem; /* samsung s20 */
+}
+
+@utility tile-highlight-long {
+  background-image: linear-gradient(45deg, var(--color-tile) 0%, var(--color-tile) 70%, var(--color-banner-gradient) 140%);
+}
+
+@utility accent {
+  color: var(--color-green-800);
+  background: var(--color-green-050);
+
+  @variant dark {
+    color: var(--color-green-500);
+    background: var(--color-green-950);
+  }
+}
+
+@utility user-avatar {
+  color: var(--color-green-800);
+  background: var(--color-green-050);
+
+  @variant dark {
+    color: var(--color-green-500);
+    background: var(--color-green-950);
+  }
+}
+
+@layer components {
+  .paragraph-style p {
+    @apply mb-4;
+  }
+
+  .list-style {
+    ul, ol {
+      list-style-position: outside;
+      @apply mb-4 pl-8;
+    }
+
+    ul {
+      list-style-type: disc;
+    }
+
+    ol {
+      list-style-type: decimal;
+    }
+
+    ul ul,
+    ol ul {
+      list-style-type: circle;
+    }
+
+    ol ol,
+    ul ol {
+      list-style-type: lower-latin;
+    }
+
+    li {
+      margin-bottom: 16px;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s infinite linear;
+}
+
+@utility brand-logo {
+  @apply h-7 w-40 bg-contain bg-no-repeat;
+  background-image: url('../images/logoLight.svg');
+
+  @variant dark {
+    background-image: url('../images/logoDark.svg');
+  }
+}
+
+@utility fa-light {
+  @apply inline-block;
+}
+@utility fa-solid {
+  @apply inline-block;
+}
+@utility fa-regular {
+  @apply inline-block;
+}

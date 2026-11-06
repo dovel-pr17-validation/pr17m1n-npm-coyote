@@ -1,0 +1,75 @@
+{% extends 'forum.base' %}
+{% block title %}
+  {{ title ? title ~ ' :: ' }}Forum dyskusyjne dla programistów{{ parent() }}
+{% endblock %}
+{% block description %}Ponad półtora miliona postów na forum. Programowanie w językach C/C++, Java, C#, Delphi, PHP, a także na temat projektowania stron WWW. Wspieramy początkujących w nauce programowania.{% endblock %}
+{% block keywords %}C/C++, C#, Delphi, PHP, WWW, webdesign, webmaster, SQL, .NET, PHP, MySQL, Oracle, PostgreSQL, algorytmy, programowanie{% endblock %}
+
+{% import 'legacyComponents.forms' as forms %}
+{% from 'titleBanner.titleBanner' import titleBanner %}
+
+{% block content %}
+  <h1 class="neon-legacy">Forum</h1>
+  <div class="neon-modern mb-3">
+    {{ titleBanner(title:'Forum', crumbs:breadcrumbs) }}
+  </div>
+  <div class="nav nav-pills mb-0">
+    {% for tab in forumTabs %}
+      <a href="{{ tab.href }}" class="nav-link {{ tab.selected ? 'active' }}">
+        {{ tab.label }}
+      </a>
+    {% endfor %}
+  </div>
+
+  {% include "forum.partials.top" %}
+
+  <main id="js-forum" class="mainbar">
+    {% block mainbar %}
+      <vue-section
+          v-for="(section, index) in sections"
+          :key="index"
+          :name="section.name"
+          :order="section.order"
+          :categories="section.categories"
+          collapsable
+          :is-collapse="section.isCollapse"
+          @collapse="changeCollapse"
+      ></vue-section>
+    {% endblock %}
+
+    <vue-notifications></vue-notifications>
+  </main>
+
+  <script>
+    var forums = {{ forums|json_encode|raw }};
+    var collapse = {{ collapse|json_encode|raw }};
+    var showCategoryName = true;
+    var postsPerPage = {{ postsPerPage|number_format }};
+    var tags = {{ tags.user|json_encode|raw }};
+  </script>
+{% endblock %}
+
+{% block sidebar %}
+  {% embed 'forum.partials.sidebar' %}
+    {% block side_menu %}
+      {% include 'forum.partials.post_count' %}
+      <div class="box mb-5">
+        <h4 class="heading">
+          {{ icon('forumActions') }}
+          Akcje
+        </h4>
+        <ul id="js-sidebar" class="side-menu">
+          <li class="action-link">
+            <a @click="markForums" title="Oznacz kategorie jako przeczytane">
+              {{ icon('forumGlobalMarkAsRead') }}
+              Oznacz jako przeczytane
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="mb-5">
+        {{ localViewers|raw }}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

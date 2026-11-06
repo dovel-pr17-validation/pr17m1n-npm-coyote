@@ -1,0 +1,58 @@
+{% extends 'adm.base' %}
+{% block title %}Dodane treści - Posty {{ parent() }}{% endblock %}
+
+{% block container %}
+  <h4 class="mt-2 mb-3">Podgląd</h4>
+  <p class="mb-2 d-flex justify-content-between">
+    <span>Wątek: <a href="{{ post.topic.href }}">{{ post.topic.label }}</a></span>
+    <span>Kategoria: <a href="{{ post.forum.href }}">{{ post.forum.label }}</a></span>
+  </p>
+
+  <div class="card card-post mb-3">
+    <div class="card-header">
+      <div class="row">
+        <div class="col-2">{{ post.author.mention }}</div>
+        <div class="col-10"><small>{{ post.createdAt.ago }}</small></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10 post-content">
+          {{ post.content }}
+        </div>
+        <style>
+            .post-content img:not(.img-smile) {
+                padding: 0.3em;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                max-width: 200px;
+                max-height: 150px;
+            }
+        </style>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10 text-end text-muted">
+          <div class="pe-2">
+            {{ icon('adminMaterialPostDropdown') }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end">
+    <a class="btn btn-secondary" href="{{ post.url }}">
+      {{ icon('adminMaterialPost') }}
+      Przejdź do postu
+    </a>
+  </div>
+
+  <a href="{{ backUrl }}" class="btn btn-secondary">
+    {{ icon('adminMaterialPostBack') }}
+    Powrót
+  </a>
+{% endblock %}

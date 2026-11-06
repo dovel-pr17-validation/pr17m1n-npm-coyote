@@ -1,0 +1,82 @@
+{% extends 'emails.layout' %}
+
+{% block container %}
+    <h1 class="greeting">Dzień dobry</h1>
+
+    <p class="paragraph">Informujemy o nowej kandydaturze na stanowisko <b>{{ link_to_route('job.offer', job.title, [job.id, job.slug]) }}</b>.</p>
+
+    <table  align="center" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="padding: 5px 0; width: 50%">
+                Imię i nazwisko:
+            </td>
+
+            <td style="padding: 5px 0; width: 50%">
+                <b>{{ application.name }}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 5px 0">
+                E-mail:
+            </td>
+
+            <td style="padding: 5px 0">
+                <b>{{ link_to('mailto:' ~ application.email, application.email) }}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 5px 0">
+                Numer telefonu:
+            </td>
+
+            <td style="padding: 5px 0">
+                <b>{{ application.phone|default('--') }}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 5px 0">
+                Minimalne oczekiwane wynagrodzenie:
+            </td>
+
+            <td style="padding: 5px 0">
+                <b>{{ application.salary|default('--') }}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 5px 0">
+                Obecny okres wypowiedzenia:
+            </td>
+
+            <td style="padding: 5px 0">
+                <b>{{ application.dismissal_period|default('--') }}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 5px 0">
+                Link do konta Github:
+            </td>
+
+            <td style="padding: 5px 0">
+                <b>{{ application.github ? link_to(application.github) : '--' }}</b>
+            </td>
+        </tr>
+    </table>
+
+    <p class="paragraph">Wiadomość od użytkownika:</p>
+
+    <hr>
+    {{ application.text|raw }}
+    <hr>
+{% endblock %}
+
+{% block footer %}
+    <p>Z poważaniem,<br>{{ config('app.name') }}</p>
+{% endblock %}
+
+{% block footnote %}
+{% endblock %}

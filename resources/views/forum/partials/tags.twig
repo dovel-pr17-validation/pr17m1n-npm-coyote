@@ -1,0 +1,12 @@
+<div class="pt-2">
+  <ul class="tag-clouds cloud">
+    {% for name, topics in tags %}
+      <li>
+        <a href="{{ route('forum.tag', [name|url_encode]) }}" class="neon-tag">
+          {{ name }}
+        </a>
+        <small>× {{ topics }}</small>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

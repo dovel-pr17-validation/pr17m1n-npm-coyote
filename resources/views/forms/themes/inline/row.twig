@@ -1,0 +1,13 @@
+{% import 'legacyComponents.forms' as forms %}
+
+<div {{ forms.attr(row_attr|merge({class: (row_attr.class|default('') ~ ' form-group' ~ (error ? ' has-error'))|trim})) }}>
+    {% if label %}
+        {% block label %}{{ include(theme ~ '.label') }}{% endblock %}
+    {% endif %}
+
+    {% block wrap %}
+        {% block widget %}{{ include(widget_path) }}{% endblock widget %}
+
+        {% block error %}{{ include(theme ~ '.error') }}{% endblock %}
+    {% endblock %}
+</div>

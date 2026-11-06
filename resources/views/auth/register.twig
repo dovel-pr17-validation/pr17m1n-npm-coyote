@@ -1,0 +1,114 @@
+{% extends 'layout' %}
+{% block title %}Rejestracja{{ parent() }}{% endblock %}
+
+{% block head %}
+  {{ parent() }}
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script type="text/javascript">
+    function onSubmit() {
+      document.getElementById("js-register-form").submit();
+    }
+  </script>
+  <style>
+      html body.padding-top {
+          padding-top: 0;
+      }
+
+      html .form-group {
+          margin-bottom: 0.5rem;
+      }
+  </style>
+{% endblock %}
+
+{% block header %}
+  {# Remove header #}
+{% endblock %}
+
+{% block breadcrumbs %}
+  {# Remove breadcrumbs #}
+{% endblock %}
+
+{% block fixed %}
+  <div class="row mt-4">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 col-xxl-3 mx-auto">
+      <div class="mb-2">
+        <a href="/">
+          <img
+              class="logo mb-4"
+              alt="4programmers.net"
+              style="height:32px;"
+              src="{{ __dark_theme ? cdn('img/logo.dark.svg') : cdn('img/logo.light.svg') }}"
+          />
+        </a>
+      </div>
+
+      {% if session_has('success') %}
+        <div class="alert alert-success mt-3">
+          {{ icon('alertSuccess') }}
+          {{ session_get('success') }}
+        </div>
+      {% endif %}
+
+      {% if session_has('error') %}
+        <div class="alert alert-danger mt-3">
+          {{ icon('alertDanger') }}
+          {{ session_get('error') }}
+        </div>
+      {% endif %}
+
+      {% include 'auth.oauth' %}
+
+      {# ten kod jest tutaj na potrzeby pluginu socialize. przekazuje on w GET komunikat bledu #}
+      {# niestety z jakiegos powodu nie mozna tego komunikatu przekazac w sesji #}
+      {% if request().has('error') %}
+        <div class="alert alert-danger">
+          {{ request().get('error') }}
+        </div>
+      {% endif %}
+
+      <h1 class="my-4 d-block text-center" style="font-size:1.25em;">
+        Załóż konto na 4programmers.net
+      </h1>
+
+      {{ form_start(form) }}
+      {{ form_row(form.name) }}
+      {{ form_row(form.password) }}
+      {{ form_row(form.password_confirmation) }}
+      {{ form_row(form.email) }}
+      {{ form_hidden('refererUrl', refererUrl) }}
+      {{ form_row(form.email_confirmation) }}
+      <div style="max-height:56px; overflow-y:auto;" class="mb-3 neon-contains-a-color-link">
+        {{ form_row(form.terms) }}
+        {{ form_row(form.marketing_agreement) }}
+        <div class="form-group">
+          <small class="form-text text-muted">
+            Administratorem danych osobowych podanych w formularzu rejestracyjnym jest Makana sp. z o.o. z
+            siedzibą przy ul.&nbsp;Krupniczej&nbsp;13 we Wrocławiu (50-075). Twoje dane osobowe będą przetwarzane
+            w celu utworzenia i dalszego utrzymywania konta w serwisie 4programmers.net, w szczególności w celu
+            umożliwienia korzystania z usługi zgodnie z <a href="/Regulamin">Regulaminem</a>. W przypadku
+            wyrażenia <a href="/Zgody">zgody</a> na otrzymywanie informacji handlowych będziemy przetwarzać Twoje
+            dane osobowe w celach marketingowych tj., w celu kierowania na podany przez Ciebie adres e-mail
+            informacji handlowych w zakresie objętym wyrażoną zgodą. Wycofanie zgody na otrzymywanie informacji
+            handlowych jest możliwe w dowolnym momencie, co nie wpływa na zgodność przetwarzania danych
+            zrealizowanego przed jej wycofaniem. Więcej informacji o przetwarzaniu danych osobowych oraz Twoich
+            prawach z tym związanych znajdziesz w naszej <a href="/Polityka_prywatności">Polityce Prywatności</a>.
+          </small>
+        </div>
+      </div>
+      <div class="text-center">
+        {{ form_row(form.submit) }}
+      </div>
+      {{ form_end(form) }}
+      <div class="text-center mb-4">
+        Masz już konto?
+        <a href="{{ route('login') }}" class="neon-color-link">
+          Zaloguj się
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  {# Remove footer #}
+{% endblock %}

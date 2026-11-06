@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pl" class="{{ __dark_theme ? 'theme-dark' : 'theme-light' }} ">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  {{ render_region('head') }}
+
+  {% block head %}
+    <title>{% block title %} :: 4programmers.net{% endblock %}</title>
+
+    {% if meta_canonical %}
+  <link rel="canonical" href="{{ meta_canonical }}">
+    {% endif %}
+
+    <meta name="description" content="{% block description %}{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}{% endblock %}">
+    <meta name="theme-color" content="#00a538"/>
+    <meta name="robots" content="{{ meta_robots }}">
+
+    <meta property="og:url" content="{{ meta_canonical }}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:title" content="{{ block('ogtitle') is defined ? block('ogtitle') : block('title') }}">
+    <meta property="og:description" content="{{ block('description') }}">
+    <meta property="og:image"
+          content="{{ block('logo') is defined ? block ('logo') : secure_asset('img/apple-touch.png') }}">
+
+    <link rel="stylesheet" href="{{ cdn('css/stylesEager.css') }}">
+
+    <script type="text/javascript">var __INITIAL_STATE = {{ __INITIAL_STATE|default('{}')|raw }};</script>
+    <script type="text/javascript">var icons = {{ icons|json_encode|raw }};</script>
+  {% endblock %}
+
+  {% if __WS_URL %}
+    <meta name="websocket-url" content="{{ __WS_URL }}">
+  {% endif %}
+
+  <link rel="shortcut icon" href="{{ asset('img/favicon.png') }}?v2" type="image/png">
+
+  <link rel="stylesheet preload prefetch"
+        href="//fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,latin-ext&display=swap" as="style"
+        crossorigin>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inter+Tight:400,500,600,700">
+  <link rel="preload" href="/fonts/font-awesome/fa-light-300.woff2?v2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/font-awesome/fa-regular-400.woff2?v2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/font-awesome/fa-solid-900.woff2?v2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/font-awesome/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body
+    data-color-scheme="{{ __color_scheme }}"
+    class="padding-top look-and-feel-modern {{ __dark_theme ? 'theme-dark' : 'theme-light' }}">
+{{ render_region('body') }}
+
+{% block body %}
+  {% import 'legacyComponents.forms' as forms %}
+  {% import 'legacyComponents.widgets' as widgets %}
+  {{ schema_organization }}
+
+{% block header %}
+  {{ form_open({url: route('logout'), name: 'logout-form'}) }}
+  {{ form_close() }}
+  <script>var navigationMenu = {{ navigationMenu|json_encode|raw }};</script>
+  <script>var navigationUser = {{ navigationUser|json_encode|raw }};</script>
+
+  <header class="{{ __dark_theme ? 'dark' }}">
+    <template shadowrootmode="open">
+      <link rel="stylesheet" href="{{ cdn('css/stylesTailwind.css') }}">
+      <div id="vue-navigation" style="position:fixed; top:0; width:100%; z-index:5; height:54px;" class="bg-tile"></div>
+    </template>
+  </header>
+{% endblock header %}
+
+  <main class="container-3xl">
+    {% block breadcrumbs %}
+      {% if breadcrumbLegacyComponent is defined %}
+        {{ breadcrumbLegacyComponent }}
+      {% endif %}
+    {% endblock breadcrumbs %}
+
+    {{ render_region('header') }}
+
+    {% block fixed %}
+      <div>
+        {% if session_has('success') %}
+          <div class="row">
+            <div class="col-12">
+              <div class="alert alert-success mt-3">
+                {{ icon('alertSuccess') }}
+                {{ session_get('success') }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if session_has('error') %}
+          <div class="row">
+            <div class="col-12">
+              <div class="alert alert-danger mt-3">
+                {{ icon('alertDanger') }}
+                {{ session_get('error') }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% block container %}
+
+        {% endblock %}
+      </div>
+    {% endblock %}
+  </main>
+
+{% block footer %}
+  {% include 'legacyComponents.gdpr' %}
+  {% include 'footer' %}
+  <div class="container-3xl">
+    <span class="scroll-top neon-scroll-top" id="scroll-to-top" title="Powrót na górę">
+      {{ icon('scrollTop') }}
+    </span>
+  </div>
+{% endblock footer %}
+  <link rel="stylesheet" href="{{ cdn('css/stylesLazyApp.css') }}">
+
+  <script src="{{ cdn('js/runtime.js') }}"></script>
+  <script src="{{ cdn('js/vendor.js') }}"></script>
+  <script src="{{ cdn('js/app.js') }}"></script>
+  <script src="{{ cdn('js/common.js') }}"></script>
+{% endblock body %}
+
+{{ render_region('bottom') }}
+</body>
+</html>

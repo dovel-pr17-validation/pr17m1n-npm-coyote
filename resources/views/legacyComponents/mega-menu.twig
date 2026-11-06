@@ -1,0 +1,20 @@
+<div class="dropdown-container">
+  <div class="dropdown-menu dropdown-menu-start left mega-menu d-none d-lg-block">
+    {% for name, categories in sections %}
+      <div class="mega-menu-body">
+        <p class="mega-menu-title">{{ name }}</p>
+        <ul class="list-unstyled">
+          {% for category in categories %}
+            <li>
+              {% if category.href %}
+                <a href="{{ category.href }}">{{ category.name }}</a>
+              {% else %}
+                <a href="{{ route('forum.category', [category.slug]) }}">{{ category.name }}</a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+</div>

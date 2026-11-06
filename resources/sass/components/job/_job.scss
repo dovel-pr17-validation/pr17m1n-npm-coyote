@@ -1,0 +1,138 @@
+@import "../../icons/icons";
+
+.card-job {
+  > .card-body {
+    padding: 10px 15px;
+  }
+
+  .skeleton-header {
+    width: 100%;
+    height: 20px;
+  }
+
+  .salary {
+    clear: both;
+  }
+
+  .job-options {
+    margin-bottom: 0;
+    font-size: 11px;
+  }
+
+  .on {
+    color: lighten($alt-link-hover-color, 5%);
+  }
+
+  &.highlight {
+    background-color: $unread-bg;
+  }
+}
+
+.list-group-tech {
+  list-style: none;
+  margin: 0;
+
+  &.inline {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+    .list-group-item a:hover:after {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0.5;
+      border-radius: 5px;
+      top: 0;
+      left: 0;
+      background-color: black;
+      vertical-align: middle;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      text-shadow: none;
+      font-size: $font-size-lg;
+      @include content-icon-solid($icon-job-board-search-tag-remove);
+    }
+  }
+
+  .list-group-item {
+    display: inline-block;
+    border-radius: .5rem !important;
+    margin-right: 5px;
+    background: darken($tag-bg, 2%);
+    border: none;
+    padding: 0;
+
+    button.job-tag,
+    a {
+      color: $gray-light;
+      font-size: $font-size-sm;
+      display: block;
+      padding: 5px;
+      text-decoration: none;
+      white-space: nowrap;
+      border: none;
+      outline: none;
+
+      &.disabled {
+        opacity: .7;
+
+        img {
+          filter: url("data:image/svg+xml;utf8,&lt;svg xmlns=\'http://www.w3.org/2000/svg\'&gt;&lt;filter id=\'grayscale\'&gt;&lt;feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/&gt;&lt;/filter&gt;&lt;/svg&gt;#grayscale"); /* Firefox 10+, Firefox on Android */
+          -webkit-filter: grayscale(100%); /* Chrome 19+, Safari 6+, Safari 6+ iOS */
+        }
+      }
+    }
+
+    img {
+      width: 17px;
+    }
+
+    input[type=checkbox] {
+      display: none;
+    }
+
+    label {
+      font-weight: normal;
+      margin: 0;
+    }
+  }
+}
+
+.medal {
+  margin-left: 8px;
+  margin-top: 0;
+  display: inline-block;
+  background: url('/img/medal.png') no-repeat;
+  width: 20px;
+  height: 20px;
+}
+
+// Label with "Promo" label
+// ---------------------------
+
+.top-spot-badge {
+  background-color: $alert-danger-background;
+  position: absolute;
+  color: $alert-warning-color;
+  font-size: 11px;
+  font-weight: normal;
+  margin-left: -7px;
+  margin-top: 5px;
+  padding: 0 5px;
+  z-index: 1000;
+  border-top-right-radius: .25rem;
+  border-bottom-right-radius: .25rem;
+
+  &:before {
+    content: "";
+    border-style: solid;
+    border-width: 0 7px 8px 0;
+    border-color: transparent $alert-warning-color transparent transparent;
+    left: 0;
+    top: 16px;
+    position: absolute;
+  }
+}

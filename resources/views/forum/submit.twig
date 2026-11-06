@@ -1,0 +1,94 @@
+{% extends 'forum.base' %}
+{% block title %}
+  {% apply spaceless %}
+    {% if topic.id is null %}
+      Nowy wątek
+    {% elseif post.id is null %}
+      Napisz odpowiedź w wątku {{ topic.title }}
+    {% else %}
+      Edycja posta
+    {% endif %}
+
+    {{ parent() }}
+  {% endapply %}
+{% endblock %}
+
+{% import 'legacyComponents.forms' as forms %}
+
+{% block container %}
+  <div class="row mt-2 mb-4 ps-2 pe-2">
+    <div id="js-post" class="col-sm-9">
+      <vue-form
+        id="js-submit-form"
+        :show-title-input="true"
+        :show-sticky-checkbox="showStickyCheckbox"
+        :show-discuss-mode-select="showDiscussModeSelect"
+        :post="undefinedPost"
+        :popular-tags="popularTags"
+        :require-tag="{{ vueBoolean(forum.require_tag) }}"
+        :show-tags-input="{{ vueBoolean(forum.enable_tags) }}"
+        @save="redirectToTopic"
+      ></vue-form>
+      <vue-notifications></vue-notifications>
+    </div>
+
+    <aside class="col-sm-3">
+      <div id="hint-title" class="alert alert-warning">
+        <h4>Jak tytułować wątki</h4>
+
+        <p>► Staraj się nadawać wątkom znaczące tematy!</p>
+        <p>► Unikaj jednowyrazowych tematów wątków!</p>
+        <p>► Wątki o temacie <cite>pomoc</cite>, <cite>pomocy</cite>, <cite>help</cite> będą usuwane!</p>
+        <p>► Sprawdź w wyszukiwarce, czy wątek podobny do Twojego nie pojawił się wcześniej na forum.</p>
+        <p>► Czy Twój wątek rzeczywiście pasuje do tej kategorii?</p>
+        <p>► Unikaj stosowania prefiksów w tytułach wątków! Zamiast tego używaj <strong>tagów</strong>!</p>
+      </div>
+
+      <div id="hint-text" class="alert alert-warning" style="display: none;">
+        <h4>Jak formatować treść postu</h4>
+
+        <p>► Kod źródłowy umieszczaj pomiędzy <code>```</code> a <code>```</code> (w nowej linii). Jeżeli chcesz włączyć kolorowanie składni, dodaj nazwę języka, np. <code>```php</code></p>
+        <p>► Stosuj <code><strong>**pogrubienie**</strong></code> i <code><cite>*pochylenie*</cite></code></p>
+        <p>► <code><tt>`**brak formatowania**`</tt></code></p>
+        <p>► <code>`polecenia języka programowania`</code></p>
+        <p>► Symbole <code>*</code> i <code>-</code> na początku linii powodują wypunktowanie i numerowanie</p>
+        <p>► Zwracaj uwagę na gramatykę i ortografię!</p>
+        <p>► <cite>Ctrl+Enter</cite> publikuje post.</p>
+        <p>► <cite>Shift+Tab</cite> tworzy wcięcie.</p>
+        <p>► <cite>Ctrl+V</cite> wkleja obrazek ze schowka (<strong>tylko Chrome oraz Firefox</strong>)</p>
+      </div>
+
+      <div id="hint-tags" class="alert alert-warning" style="display: none;">
+        <h4>Jak tagować wątki</h4>
+
+        <p>► Tagi pozwalają grupować podobne wątki.</p>
+        <p>► Oddzielaj tagi spacją.</p>
+        <p>► Nie używaj synonimów.</p>
+        <p>► Unikaj zaimków i przyimków.</p>
+        <p>► Symbol <tt>-</tt> służy do łączenia wyrazów - np. <tt>ms-sql</tt>.</p>
+        <p>► Używaj jedynie <strong>tagów technicznych</strong> opisujących technologie, jezyki programowania.</p>
+      </div>
+
+      <div id="hint-user_name" class="alert alert-warning" style="display: none;">
+        <h4>Nazwa użytkownika</h4>
+
+        <p>► Jesteś anonimowym użytkownikiem - <a href="{{ route('register') }}">zarejestruj się</a>.</p>
+        <p>► Anonimowi użytkownicy nie mogą edytować ani komentować postów.</p>
+        <p>► Anonimowi użytkownicy nie dostają powiadomień (o usunięciu, przeniesieniu wątku).</p>
+      </div>
+    </aside>
+  </div>
+{% endblock %}
+
+{% block body %}
+  <script>
+    var forum = {{ forum|json_encode|raw }};
+    var topic = {title: '', tags: [], discuss_mode: 'linear'};
+    var showStickyCheckbox = {{ show_sticky_checkbox }};
+    var showDiscussModeSelect = {{ show_discuss_mode_select|json_encode|raw }};
+    var popularTags = {{ popular_tags|json_encode|raw }};
+    var emojis = {{ emojis|json_encode|raw }};
+  </script>
+
+  {{ parent() }}
+{% endblock %}

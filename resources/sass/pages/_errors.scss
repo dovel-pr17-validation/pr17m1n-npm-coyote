@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+#page-404 {
+  .list-unstyled {
+    margin: 40px 10px;
+
+    li {
+      margin: 20px 0;
+      color: $gray;
+      font-size: 120%;
+
+      a {
+        color: inherit;
+      }
+    }
+  }
+}

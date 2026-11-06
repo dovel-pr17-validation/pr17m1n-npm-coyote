@@ -1,0 +1,22 @@
+<div v-if="!recipient.deleted_at" class="row mb-2">
+  <div class="col-12">
+    <vue-markdown
+      v-model="text"
+      :assets="assets"
+      :error="errors.text"
+      :emojis="emojis"
+      @save="sendMessage"
+      ref="editor"
+      preview-url="/User/Pm/Preview"
+    >
+    </vue-markdown>
+  </div>
+</div>
+
+<div v-if="!recipient.deleted_at" class="row">
+  <div class="col-12">
+    <vue-button :disabled="isProcessing" @click="sendMessage" class="btn btn-primary btn-sm">
+      Wyślij
+    </vue-button>
+  </div>
+</div>

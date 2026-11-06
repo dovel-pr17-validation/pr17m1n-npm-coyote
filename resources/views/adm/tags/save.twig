@@ -1,0 +1,22 @@
+{% extends 'adm.base' %}
+{% block title %}Zarządzanie tagiem{{ parent() }}{% endblock %}
+
+{% block card %}
+    {{ form(form) }}
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <script>
+        $(function() {
+            $('input[name="logo_placeholder"]').click(function() {
+                $('input[name="logo"]').click();
+            });
+
+            $(':file').change(function() {
+                $(this).next().val($(this).val());
+            })
+        });
+    </script>
+{% endblock %}

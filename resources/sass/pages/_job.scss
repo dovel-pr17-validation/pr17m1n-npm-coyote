@@ -1,0 +1,80 @@
+@charset "UTF-8";
+@import "job/home";
+@import "job/submit";
+@import "job/payment";
+@import "job/application";
+
+.mce-notification, .tox-notifications-container {
+  display: none !important;
+}
+
+.benefits,
+.features,
+.about-items {
+  .list-group-item {
+    border: none;
+    font-size: 14px;
+
+    i {
+      &.fa-xmark {
+        color: #ddd;
+      }
+    }
+
+    &.checked {
+      i.fa-check {
+        color: $primary;
+      }
+    }
+  }
+}
+
+.about-items {
+  .list-group-item {
+    font-size: $font-size-base;
+    padding-top: 7px;
+    padding-bottom: 7px;
+
+    > p {
+      padding-left: 10px;
+      display: inline-block;
+      vertical-align: top;
+      overflow: hidden;
+
+      .fa {
+        color: #333333bf;
+        vertical-align: middle;
+        font-size: 16px;
+      }
+
+      small {
+        font-size: 11px;
+        display: block;
+        text-transform: uppercase;
+      }
+
+      strong {
+        color: $gray-light;
+      }
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+}
+
+// Border around buttons
+// ---------------------------
+
+.edge {
+  border-radius: .5rem;
+  background-color: darken($gray-lighter, 4%);
+  padding: 5px;
+  display: inline-block;
+}
+
+// Wyswietlanie tresci artykulu
+// --------------------------------
+
+@import "job/offer";

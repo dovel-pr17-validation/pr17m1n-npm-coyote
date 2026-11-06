@@ -1,0 +1,58 @@
+@use "../../feature/theme/theme" as theme;
+@use "../../feature/lookAndFeel/style-guide" as style;
+
+.employer {
+  color: $gray;
+}
+
+.card-media {
+  .media-link {
+    display:         flex;
+    text-decoration: none;
+    padding-bottom:  7px;
+    padding-top:     7px;
+  }
+
+  h5 {
+    padding-bottom: 1px;
+    font-size:      $font-size-base;
+    font-weight:    bold;
+  }
+
+  p {
+    font-size: $font-size-sm;
+    margin:    3px 0;
+
+    a {
+      color: inherit;
+    }
+  }
+
+  .tag-clouds {
+    > li {
+      > span {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.card-job {
+  .media {
+    p.location {
+      @include theme.property(border-bottom, 
+              1px solid style.$neutral-050, 
+              1px solid style.$neutral-700);
+    }
+  }
+}
+
+.card-job-missing {
+  background-color: #eee;
+}
+
+#form-fixed {
+  .next-tab {
+    color: #333333;
+  }
+}

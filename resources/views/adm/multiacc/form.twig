@@ -1,0 +1,35 @@
+{% extends 'adm.base' %}
+{% block title %}Kartoteka {{ parent() }}{% endblock %}
+
+{% import "adm.multiacc.components.twig" as components %}
+
+{% block cardHeader %}
+  <div class="card-header d-flex justify-content-between align-items-center">
+    Nowa kartoteka dla delikwenta
+    <a class="btn btn-sm btn-secondary" href="{{ backHref }}">
+      {{ icon('navigateBack') }}
+      Wróć
+    </a>
+  </div>
+{% endblock %}
+
+{% block card %}
+  <p>Chcesz stworzyć kartotekę dla delikwenta.</p>
+  <p>Będziesz mógł:</p>
+  <ul>
+    <li>Dodać notatki moderatorskie, które dotyczą delikwenta</li>
+    <li>Rozpoznać wielokrotne konta użytkowników, którymi posługuje się delikwent</li>
+    <li>Pozostawić informacje dla innych moderatorów</li>
+  </ul>
+  <p>
+    Nie dodawaj kartoteki dla użytkowników, którzy działają zgodnie z regulaminem 4programmers.net!
+  </p>
+  <form method="POST" action="{{ postUrl }}">
+    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+    {{ components.formField('Konta użytkownika', 'Nazwa konta użytkownika', 'username[]', 'username.0') }}
+    <a class="btn btn-secondary" href="{{ backHref }}">Anuluj</a>
+    <button type="submit" class="btn btn-primary">
+      Stwórz
+    </button>
+  </form>
+{% endblock %}

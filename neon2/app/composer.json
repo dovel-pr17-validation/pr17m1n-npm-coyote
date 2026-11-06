@@ -1,0 +1,14 @@
+{
+  "require": {
+    "stripe/stripe-php": "v17.1.1",
+    "ext-pdo": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.1.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Neon2\\": "./src/"
+    }
+  }
+}

@@ -1,0 +1,266 @@
+{% extends 'job.base' %}
+
+{%- block title -%}
+  Praca dla programistów
+
+  {% if firm %}
+    w firmie {{ firm }}
+  {% endif %}
+
+  {% if request('q') %}
+    {{ request('q') }}
+  {% endif %}
+
+  {% if input.tags %}
+    {{ input.tags|join(', ') }}
+  {% endif %}
+
+  {% if input.locations %}
+    {{ input.locations|join(', ') }}
+  {% endif %}
+
+  {{ parent() }}
+{%- endblock -%}
+{% block description %}Praca dla programistów. Pracodawco: umieść u nas swoją ofertę pracy - już od 1 zł za dzień. Znajdź u nas pracownika wśród 50 000 programistów.{% endblock %}
+{% block keywords %}programowanie, praca, C#, Java, PHP, Android, Kotlin, Python, programista, HTML, CSS, webdesign, JavaScript, jQuery, C, C++, webmastering{% endblock %}
+
+{% from 'titleBanner.titleBanner' import titleBanner %}
+
+{% block container %}
+  <div id="js-job">
+    <div class="row neon-legacy">
+      <div class="col-md-12">
+        <h1>Oferty Pracy w IT - Odwiedza nas ponad 150 tys. programistów miesięcznie</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-9 col-12">
+        <div class="neon-modern mb-3">
+          {{ titleBanner(title:'Oferty Pracy w IT - Odwiedza nas ponad 150 tys. programistów miesięcznie', crumbs:breadcrumbs) }}
+        </div>
+        {% if auth_check() %}
+          <vue-tabs :items="tabs" current-tab="/Praca" class="mt-4"></vue-tabs>
+        {% endif %}
+
+        <form method="get" @submit.prevent="search" autocomplete="off">
+          <div class="card mt-3">
+            <div class="job-search-form card-body">
+              <div class="input-item keyword-search" :class="{'extended': selectedTab === 'tech'}">
+                <span class="fa-icon">
+                  {{ icon('jobBoardSearch') }}
+                </span>
+                <ul v-cloak class="list-group list-group-tech inline">
+                  <li v-for="tag in input.tags" class="list-group-item">
+                    <a @click.prevent="toggleTag(tag)" href="javascript:" rel="nofollow">
+                      ${ tag }
+                    </a>
+                  </li>
+                </ul>
+                <input
+                    v-model="input.q"
+                    @focus="selectTab('tech')"
+                    tabindex="1"
+                    ref="q"
+                    name="q"
+                    type="search"
+                    class="neon-input neon-input--no-border"
+                    placeholder="Szukaj po tytule, nazwie firmy"
+                    autocomplete="off"
+                    autofocus>
+                <a @click="selectTab('tech')" href="javascript:" rel="nofollow" class="fa-icon">
+                  <vue-icon name="jobBoardFilterOpen" v-if="isTabSelected('tech')"></vue-icon>
+                  <vue-icon name="jobBoardFilterClosed" v-else></vue-icon>
+                </a>
+              </div>
+
+              <div class="input-item location-search" :class="{'extended': selectedTab === 'location'}">
+                <span class="fa-icon">
+                  {{ icon('jobBoardSearchLocation') }}
+                </span>
+                <ul v-cloak class="list-group list-group-tech inline">
+                  <li v-if="input.remote" class="list-group-item">
+                    <a @click.prevent="toggleRemote" href="javascript:" rel="nofollow">
+                      Praca zdalna
+                    </a>
+                  </li>
+                  <li v-for="location in input.locations" class="list-group-item">
+                    <a @click.prevent="toggleLocation(location)" href="javascript:" rel="nofollow">
+                      ${ capitalize(location) }
+                    </a>
+                  </li>
+                </ul>
+
+                <input
+                    v-model="input.city"
+                    @focus="selectTab('location')"
+                    tabindex="2"
+                    ref="city"
+                    type="search"
+                    class="neon-input neon-input--no-border"
+                    placeholder="Nazwa miejscowości"
+                    autocomplete="off">
+                <a @click="selectTab('location')" href="javascript:" rel="nofollow" class="fa-icon">
+                  <vue-icon name="jobBoardFilterOpen" v-if="isTabSelected('location')"></vue-icon>
+                  <vue-icon name="jobBoardFilterClosed" v-else></vue-icon>
+                </a>
+              </div>
+
+              <div class="input-item salary-search" :class="{'extended': selectedTab === 'salary'}">
+                <span class="fa-icon">
+                  {{ icon('jobBoardFilterSalary') }}
+                </span>
+                <input
+                    v-model.number="input.salary"
+                    @focus="selectTab('salary')"
+                    placeholder="> 0"
+                    type="text"
+                    class="neon-input neon-input--no-border"
+                    tabindex="3">
+                <select v-model="defaultCurrency" name="currency" class="form-control">
+                  <option v-for="currency in currencies" :key="currency.id" :value="currency.id">
+                    ${ currency.name + ' (' + currency.symbol + ')' }
+                  </option>
+                </select>
+              </div>
+
+              <div class="input-item button-search d-none d-md-block">
+                <button tabindex="4" class="btn btn-primary btn-search" type="submit">
+                  {{ icon('jobBoardSearch') }}
+                </button>
+              </div>
+            </div>
+
+            <div v-cloak class="job-filter-form card-footer">
+              <div id="js-filter-tech" v-show="isTabSelected('tech')" class="filters">
+                <ul class="list-group list-group-horizontal list-group-tech">
+                  <li v-for="tag in tags" :key="tag.id" class="list-group-item">
+                    <input type="hidden" name="tags[]" :value="tag.name" :checked="includesTag(tag.name)">
+                    <button @click.prevent="toggleTag(tag.name)" :class="['job-tag',
+                      {'disabled': input.tags.length && includesTag(tag.name)}]">
+                      <img :alt="tag.name" :src="tag.logo">
+                      ${ tag.real_name || tag.name }
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <div id="js-filter-location" v-show="isTabSelected('location')" class="filters">
+                <ul class="list-group list-group-horizontal list-group-tech">
+                  <li class="list-group-item">
+                    <input type="hidden" name="remote" :checked="input.remote">
+
+                    <a @click.prevent="toggleRemote" href="javascript:" rel="nofollow">
+                      <span class="text-primary" v-if="input.remote !== null">
+                        {{ icon('jobBoardFilterRemote') }}
+                      </span>
+                      <template v-else>
+                        {{ icon('jobBoardFilterRemote') }}
+                      </template>
+                      Praca zdalna
+                    </a>
+                  </li>
+
+                  <li v-for="(location, index) in locations" :key="index" class="list-group-item">
+                    <input type="hidden" name="locations[]" :value="location" :checked="includesLocation(location)">
+
+                    <a @click.prevent="toggleLocation(location)" href="javascript:" :class="{'disabled': input.locations.length && includesLocation(location)}" rel="nofollow">
+                      ${ capitalize(location) }
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex mb-3">
+            <div class="ms-auto">
+              Sortuj według
+
+              <select v-model="defaultSort" @change="search" name="sort" class="form-control d-inline-block form-control-sm ms-2 w-auto">
+                <option value="boost_at">Data dodania</option>
+                <option value="_score">Trafność</option>
+                <option value="salary">Wynagrodzenie</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-3 d-none d-sm-block">
+        <div class="neon-modern">
+          <div class="title-banner title-banner--gradient-left neon-rounded p-4">
+            <ul class="title-banner__crumbs">
+              <li class="title-banner__crumbs-item">
+                Dla Pracodawców
+              </li>
+            </ul>
+            <div class="title-banner__title">
+              <a class="btn btn-primary jobboard-add-offer-list" href="{{ route('job.business') }}" style="width:100%;">
+                Dodaj ofertę pracy od 0zł
+              </a>
+            </div>
+          </div>
+        </div>
+        {% if userPlanBundle %}
+          <section class="box">
+            <h4>Opłacony pakiet</h4>
+            <div class="neon-tile neon-rounded p-4">
+              <p class="mb-2">
+                Masz do wykorzystania <strong>{{ userPlanBundle.remaining }}</strong> z <strong>{{ userPlanBundle.bundleSize }}</strong>
+                publikacji ogłoszeń zakupionego w Planie <strong>{{ userPlanBundle.planName }}</strong>.
+              </p>
+              <a class="btn btn-primary jobboard-add-offer-list" href="{{ userPlanBundle.useUrl }}">
+                Dodaj ogłoszenie
+              </a>
+            </div>
+          </section>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-9 col-12">
+        {% include 'job.partials.skeletons' %}
+        <div v-cloak v-if="jobs.data.length === 0" class="card card-body card-job-missing p-2">
+          <p class="text-center lead mt-4">
+            Nie znaleźliśmy ofert, które spełniają Twoje kryteria.<br>
+            <a href="{{ route('neon.jobOffer.list') }}">Zobacz wszystkie oferty</a>, a być może znajdziesz coś dla siebie!
+          </p>
+        </div>
+        <nav class="mb-2">
+          <vue-pagination :current-page="jobs.meta.current_page" :total-pages="jobs.meta.last_page" @change="changePage"></vue-pagination>
+        </nav>
+      </div>
+      <div class="col-md-3 col-12">
+        <section v-cloak v-show="subscribed.length" class="box">
+          <h4>
+            {{ icon('jobBoardSubscribedOffers') }}
+            Ulubione ogłoszenia
+          </h4>
+          <div id="js-subscribed" class="card card-media" style="max-height: 400px">
+            <div class="card-body">
+              <vue-job-tiny v-for="job in subscriptions" :job="job" :key="job.id"></vue-job-tiny>
+            </div>
+          </div>
+        </section>
+        <div class="mt-4">
+          {{ render_block('job_ads') }}
+        </div>
+      </div>
+    </div>
+    <vue-notifications></vue-notifications>
+  </div>
+
+  <script type="text/javascript">
+    var data = {
+      jobs: {{ jobs|json_encode|raw }},
+      tags: {{ tags|json_encode|raw }},
+      locations: {{ locations|json_encode|raw }},
+      input: {{ input|json_encode|raw }},
+      defaults: {{ defaults|json_encode|raw }},
+      currencies: {{ currencies|json_encode|raw }},
+      subscribed: {{ subscribed|json_encode|raw }},
+      selectedTab: 'tech',
+      skeleton: false,
+    };
+  </script>
+{% endblock %}

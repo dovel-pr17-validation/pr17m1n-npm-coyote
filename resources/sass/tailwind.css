@@ -1,0 +1,29 @@
+@import "../../neon2/web/src/Infrastructure/Vue/DesignSystem/tailwind.css";
+@import "../../neon2/web/src/Infrastructure/Vue/Icon/internal/fontAwesomeIcons.css";
+@import "./icons.css";
+
+@source "../../neon2/web/src/Infrastructure/Vue/";
+
+@layer properties {
+  *, :before, :after, ::backdrop {
+    --tw-border-style: solid;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-translate-z: 0;
+    --spacing: 0.25rem;
+    --tw-inset-shadow: 0 0 #0000;
+    --tw-inset-ring-shadow: 0 0 #0000;
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+  }
+}
+
+@utility brand-logo {
+  @apply h-7 w-40 bg-contain bg-no-repeat;
+  background-image: url('/img/logo.light.svg');
+
+  @variant dark {
+    background-image: url('/img/logo.dark.svg');
+  }
+}

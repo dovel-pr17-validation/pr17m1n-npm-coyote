@@ -1,0 +1,32 @@
+<script>
+  var pagination = {{ pagination|json_encode|raw }};
+  var emojis = {{ emojis|json_encode|raw }};
+</script>
+
+<section>
+  <template v-if="microblogs.length > 0">
+    <vue-microblog v-for="microblog in microblogs" :key="microblog.id" :microblog="microblog" :wrap="true"></vue-microblog>
+  </template>
+
+  <div v-else class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-body bg-light p-2">
+            <p class="text-center mb-0">
+              {% if user.id == user('id') %}
+                Dodaj swój pierwszy wpis na mikroblogu!
+              {% else %}
+                Użytkownik nie opublikował żadnego wpisu na mikroblogu.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 mb-3 d-flex justify-content-center">
+    <vue-pagination :current-page="currentPage" :total-pages="totalPages" @change="changePage"></vue-pagination>
+  </div>
+</section>

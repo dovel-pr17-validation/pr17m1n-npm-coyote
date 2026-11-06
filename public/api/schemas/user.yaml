@@ -1,0 +1,18 @@
+type: object
+properties:
+  id:
+    type: integer
+  name:
+    type: string
+  deleted_at:
+    type: string
+    format: "datetime"
+    nullable: true
+  is_blocked:
+    type: boolean
+    default: false
+  photo:
+    type: string
+    nullable: true
+  is_online:
+    type: boolean

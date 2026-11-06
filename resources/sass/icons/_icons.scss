@@ -1,0 +1,202 @@
+@charset "UTF-8";
+
+$fa-font-path: "/fonts/font-awesome";
+
+@font-face {
+  font-family: 'Font Awesome 6 Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: url('#{$fa-font-path}/fa-light-300.woff2?v12') format('woff2');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: url('#{$fa-font-path}/fa-regular-400.woff2?v12') format('woff2');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  src: url('#{$fa-font-path}/fa-solid-900.woff2?v12') format('woff2');
+}
+
+.fa-light {
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 300;
+  display: inline-block;
+}
+
+// Since fontawesome-free 6.7, icon classes only set --fa, and the content
+// is applied only for free styles (solid, regular, brands), not for light.
+.fa-light:before {
+  content: var(--fa);
+}
+
+.fa-regular {
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 400;
+  display: inline-block;
+}
+
+.fas, .fa-solid {
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  display: inline-block;
+}
+
+.fa-brands {
+  font-family: 'Font Awesome 6 Brands';
+  font-style: normal;
+}
+
+@import "@fortawesome/fontawesome-free/scss/fontawesome";
+@import "@fortawesome/fontawesome-free/scss/brands";
+@import "@fortawesome/fontawesome-free/scss/functions";
+@import "@fortawesome/fontawesome-free/scss/variables";
+
+@mixin content-icon($icon) { // regular
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  content: fa-content($icon);
+  font-weight: 400;
+}
+
+@mixin content-icon-solid($icon) {
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  content: fa-content($icon);
+  font-weight: 900;
+}
+
+@mixin content-icon-brand($icon) {
+  font-family: 'Font Awesome 6 Brands';
+  content: fa-content($icon);
+  font-weight: 400;
+}
+
+$icon-post-quote: $fa-var-reply;
+
+$icon-profile-statement: $fa-var-quote-left;
+$icon-wiki-author-statement: $fa-var-quote-left;
+
+$icon-application-github-profile: $fa-var-github;
+$icon-job-board-search-tag-remove: $fa-var-xmark;
+$icon-wiki-categories: $fa-var-folder-open;
+
+$icon-job-offer-company-headline: $fa-var-quote-left;
+$icon-register-benefit: $fa-var-check;
+
+$icon-category-topic-mark-as-read: $fa-var-eye;
+
+$icon-category-sort-asc: $fa-var-sort-up;
+$icon-category-sort-desc: $fa-var-sort-down;
+
+$icon-admin-table-sort: $fa-var-sort;
+$icon-admin-table-sort-asc: $fa-var-sort-down;
+$icon-admin-table-sort-desc: $fa-var-sort-up;
+
+.fa-square-question:before {
+  content: "\f2fd";
+}
+
+.fa-message-quote:before {
+  content: "\e1e4";
+}
+
+.fa-message-code:before {
+  content: "\e1df";
+}
+
+.fa-spinner-third:before {
+  content: "\f3f4";
+}
+
+.fa-inbox-in:before {
+  content: "\f310";
+}
+
+.fa-user-unlock:before {
+  content: "\e058";
+}
+
+.fa-user-magnifying-glass:before {
+  content: "\e5c5";
+}
+
+.fa-floppy-disk-pen:before {
+  content: "\e182";
+}
+
+.fa-pen-line:before {
+  content: "\e212";
+}
+
+.fa-arrow-up-from-line:before {
+  content: "\f342";
+}
+
+.fa-arrow-up-from-bracket:before {
+  content: "\e09a";
+}
+
+.fa-circle-ellipsis:before {
+  content: "\e10a";
+}
+
+.fa-trash-can-arrow-turn-left:before,
+.fa-trash-can-undo:before,
+.fa-trash-undo-alt:before,
+{
+  content: "\f896";
+}
+
+.fa-circle-dollar:before,
+.fa-dollar-circle:before,
+.fa-usd-circle:before,
+{
+  content: "\f2e8";
+}
+
+.fa-sun-alt:before, .fa-sun-bright:before {
+  content: "\e28f";
+}
+
+.fa-heart-rate:before, .fa-wave-pulse:before {
+  content: "\f5f8";
+}
+
+.fa-list-tree:before {
+  content: "\e1d2";
+}
+
+.fa-arrow-up-left:before {
+  content: "\e09d";
+}
+
+.fa-comment-pen:before {
+  content: "\f4ae";
+}
+
+.fa-comment-question:before {
+  content: "\e14b";
+}
+
+.fa-arrow-turn-left:before {
+  content: "\e632";
+}
+
+.fa-share-nodes:before {
+  content: "\f1e0";
+}
+
+.fa-cart-circle-arrow-down:before {
+  content: "\e3ef";
+}
+
+.fa-shield-check:before {
+  content: "\f2f7";
+}

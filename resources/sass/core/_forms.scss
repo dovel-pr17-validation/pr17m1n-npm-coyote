@@ -1,0 +1,46 @@
+@include media-breakpoint-down(md) {
+  .col-form-label, .checkbox {
+    font-size: $font-size-sm;
+  }
+}
+
+.col-form-label {
+  font-weight: bold;
+}
+
+.custom-switch {
+  .custom-control-label::before {
+    background-color: #fafafa;
+  }
+
+  .custom-control-input:checked ~ .custom-control-label {
+    &::after {
+      background-color: $primary;
+    }
+
+    &::before {
+      background-color: var(--header-color);
+    }
+  }
+}
+
+.form-text-help {
+  color: #6c757d;
+}
+
+.custom-checkbox {
+  .custom-control-label {
+    $offset: 22px;
+    padding-left: $offset;
+    width: 100%;
+
+    .custom-control-input {
+      margin-left: -$offset;
+      vertical-align: top;
+    }
+
+    .label-text {
+      display: inline-block;
+    }
+  }
+}

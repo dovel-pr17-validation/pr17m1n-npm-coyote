@@ -1,0 +1,105 @@
+{% extends 'adm.base' %}
+{% block title %}Dodane treści {{ parent() }}{% endblock %}
+
+{% block container %}
+  <div>
+    <form class="d-flex">
+      <div class="input-group mb-2">
+        <span class="input-group-text">
+          {{ icon( 'adminMaterialSearch') }}
+        </span>
+        <input name="filter" class="form-control" value="{{ searchFilter }}">
+      </div>
+      <div class="ms-2">
+        <button class="btn btn-secondary">
+          Szukaj
+        </button>
+      </div>
+    </form>
+    <div class="mb-2">
+      Użyte filtry:
+      {% for filter in usedFilters %}
+        <a href="?filter={{ searchFilter }}&remove={{ filter }}">
+          <code>{{ filter }}</code>{% if loop.last == false %},{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+    <div class="mb-2">
+      Dostępne filtry:
+      {% for filter in availableFilters %}
+        <a href="?filter={{ searchFilter }}&add={{ filter }}">
+          <code>{{ filter }}</code>{% if loop.last == false %},{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+    <style>
+      a.material-list-item {
+        color: inherit;
+      }
+
+      a.material-list-item:hover {
+        text-decoration: none;
+        background-color: rgb(128, 128, 128, 0.03);
+      }
+
+      a.material-list-item.report-open {
+        background-color: #ffe5e5;
+      }
+
+      a.material-list-item.report-open .report-icon i {
+        color: #a11414;
+      }
+    </style>
+
+    <div class="card mb-3">
+      <div class="card-header">
+        Wpisy ({{ materials.total }})
+      </div>
+      <div class="list-group list-group-flush">
+        {% for material in materials.items %}
+          <a href="{{ material.href }}" class="list-group-item material-list-item {{ material.reportOpen ? 'report-open' : '' }}">
+            <div class="d-flex" style="opacity:{{ material.deletedAt ? '0.4' : '1.0' }};">
+              <div>
+                <div class="img-thumbnail me-2" style="width:40px;" title="{{ material.authorUsername }}">
+                  {{ user_avatar(material.authorImage, material.authorUsername) }}
+                </div>
+              </div>
+              <div style="min-width:0;">
+                <p class="m-0" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  {{ material.preview }}
+                  &nbsp;
+                </p>
+                <p class="m-0 text-muted">
+                  <span class="badge badge-secondary">{{ material.type }}</span>
+                  <small>
+                    <b>@{{ material.authorUsername }}</b>
+                    napisał
+                    <b class="text-muted" title="{{ material.createdAt.format }}">{{ material.createdAt.ago }}</b>
+                    {% if material.deletedAt %}
+                      (usunięto <b title="{{ material.deletedAt.format }}">{{ material.deletedAt.ago }}</b>)
+                    {% endif %}
+                  </small>
+                </p>
+              </div>
+              <div class="flex-grow-1 text-end text-muted report-icon">
+                {% if material.reported %}
+                  {{ icon('adminMaterialReported') }}
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+        {% if materials.items is empty %}
+          <div class="list-group-item text-center">
+            <span class="text-muted">
+              Nie znaleziono treści spełniających podane kryteria.
+            </span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="mb-4 d-flex justify-content-center">
+      {{ pagination }}
+    </div>
+  </div>
+{% endblock %}

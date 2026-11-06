@@ -1,0 +1,47 @@
+@import "../../icons/icons";
+
+.table tr.strikeout {
+  td {
+    text-decoration:line-through;
+  }
+}
+
+.table th a.sort {
+  display: block;
+  color: unset;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:before {
+    float: right;
+    @include content-icon-solid($icon-admin-table-sort);
+  }
+}
+
+.table th a.sort.asc {
+  &:before {
+    @include content-icon-solid($icon-admin-table-sort-asc);
+  }
+}
+
+.table th a.sort.desc {
+  &:before {
+    @include content-icon-solid($icon-admin-table-sort-desc);
+  }
+}
+
+.grid {
+  table {
+    margin-bottom: 0;
+  }
+
+  .pagination {
+    margin: 8px 0;
+  }
+
+  .btn-add {
+    margin-bottom: 8px;
+  }
+}

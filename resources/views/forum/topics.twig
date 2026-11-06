@@ -1,0 +1,33 @@
+{% extends 'forum.home' %}
+
+{% set current_tag = renderParams.tagName|default(null) %}
+
+{% block title %}
+  {% if current_tag %}
+    {{ current_tag }} | Problemy i Porady :: 4programmers.net
+  {% else %}
+    {{ parent() }}
+  {% endif %}
+{% endblock %}
+
+{% block description %}
+  {% if current_tag %}
+    Dowiedz się więcej o {{ current_tag }}. Znajdziesz tu informacje dla początkujących i zaawansowanych użytkowników. Sprawdź więcej.
+  {% else %}
+    {{ parent() }}
+  {% endif %}
+{% endblock %}
+
+{% block mainbar %}
+    {% include 'forum.partials.topics' %}
+{% endblock %}
+
+{% block body %}
+  <script>
+    var topics = {{ topics|json_encode|raw }};
+    var posts_per_page = {{ postsPerPage }};
+    var flags = {{ flags|json_encode|raw }};
+  </script>
+
+  {{ parent() }}
+{% endblock %}

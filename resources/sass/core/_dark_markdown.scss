@@ -1,0 +1,83 @@
+@use "../../feature/lookAndFeel/style-guide" as style;
+
+body.theme-dark {
+  :not(pre) > code,
+  pre,
+  {
+    color: #acacac;
+    background-color: style.$neutral-900; // TODO Remove after new homepage
+    border: none;
+  }
+
+  kbd {
+    background-color: #101010;
+    color: #acacac;
+    text-shadow: 0 1px 0 #2f2f2f;
+    border-color: #2f2f2f;
+    box-shadow: 0 1px 1px #242a30;
+  }
+
+  blockquote {
+    border-color: #2f2f2f;
+  }
+
+  table {
+    color: #acacac;
+
+    th, td, thead th, tbody td, tbody th {
+      border-color: #2f2f2f;
+    }
+  }
+
+  .line-numbers .line-numbers-rows {
+    color: #404040;
+    border-right-color: #2f2f2f;
+
+    > span:before {
+      color: inherit;
+    }
+  }
+
+  pre[class*="language-"] {
+    color: #d6d6d6;
+
+    .token.operator {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .token.keyword {
+      color: #52b1da;
+    }
+
+    .token.function,
+    .token.class-name {
+      color: #ff7c93;
+    }
+
+    .token.string {
+      color: #80b80f;
+    }
+
+    .token.selector,
+    .token.attr-name {
+      color: #87a647;
+    }
+
+    .token.attr-value {
+      color: #5da0bc;
+    }
+
+    .token.tag {
+      color: #c580c5;
+    }
+
+    .token.number,
+    .token.property {
+      color: #be93bd;
+    }
+
+    .tag.punctuation {
+      color: #acacac;
+    }
+  }
+}

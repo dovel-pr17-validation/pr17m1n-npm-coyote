@@ -1,0 +1,19 @@
+<script>
+    $(function() {
+      $.fn.geoip = function() {
+        return this.each(function() {
+          $(this).hover(function() {
+            var $this = $(this);
+
+            if (!$(this).data('title')) {
+              $.getJSON('//geo-ip.pl/1.0/ip/' + $(this).text() + '?callback=?', {}, function(json) {
+                $this.attr('title', json.country + ', ' + json.city)
+              });
+            }
+          });
+        });
+      };
+
+      $('abbr').geoip();
+    })
+</script>

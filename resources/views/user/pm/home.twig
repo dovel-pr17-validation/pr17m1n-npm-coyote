@@ -1,0 +1,39 @@
+{% extends 'user.pm.base' %}
+
+{% block pm %}
+  <nav class="d-flex justify-content-center mt-2 mb-2">
+    <vue-pagination :total-pages="totalPages" :current-page="currentPage" @change="changePage">
+    </vue-pagination>
+  </nav>
+  <template v-if="messages.length">
+    <vue-pm
+        v-for="(message, index) in messages"
+        :message="message"
+        :key="message.id"
+        :last="false"
+        :clickable-text="true">
+    </vue-pm>
+  </template>
+  <div v-cloak v-else class="text-center p-3">
+    Brak wiadomości prywatnych.
+  </div>
+  <nav class="d-flex justify-content-center mt-2 mb-2">
+    <vue-pagination :total-pages="totalPages" :current-page="currentPage" @change="changePage">
+    </vue-pagination>
+  </nav>
+{% endblock %}
+
+{% block body %}
+  <script>
+    var data = {
+      messages: {{ messages|json_encode|raw }},
+      recipient: {},
+      per_page: {{ per_page }},
+      total: {{ total }},
+      current_page: {{ current_page }}
+    };
+    var emojis = {{ emojis|json_encode|raw }};
+  </script>
+
+  {{ parent() }}
+{% endblock %}

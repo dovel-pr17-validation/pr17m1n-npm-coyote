@@ -1,0 +1,25 @@
+
+// Payment summary
+// ------------------
+
+.card-review {
+  > .card-body {
+    strong {
+      font-size: 14px;
+    }
+  }
+
+  > .card-footer {
+    span {
+      font-size: $font-size-lg;
+      display: block;
+    }
+  }
+}
+
+select[name=country_id] {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+

@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "./base.css";
+@import "./colors/blue.css";
+@import "./colors/gray.css";
+@import "./colors/green.css";
+@import "./components/separator.css";
+@import "./utilities/salary.css";
+@import "./utilities/tag.css";
+@import "./utilities/tile-backlight.css";
+@import "./utilities/tile-outline.css";
+@import "./utilities/tile-shadow.css";
+
+@source "../projections/";
+
+@custom-variant dark (&:where(.dark, .dark *));

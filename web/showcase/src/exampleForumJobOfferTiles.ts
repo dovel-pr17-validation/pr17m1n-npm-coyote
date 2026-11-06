@@ -1,0 +1,62 @@
+import type {ForumJobOfferTile} from '../../projections/ForumJobOffers/ViewModel/ForumJobOfferTile';
+
+const logoPlaceholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='8' fill='%2394a3b8'/%3E%3C/svg%3E";
+
+export const exampleForumJobOfferTiles: ForumJobOfferTile[] = [
+  // standard: regular company name and logo, regular title, a salary, two tags (one with a logo, one without)
+  {
+    companyName: 'Acme Corp',
+    companyLogoUrl: logoPlaceholder,
+    jobOfferHref: '#',
+    jobOfferClickHref: '#',
+    jobOfferExposureHref: '#',
+    jobOfferTitle: 'Senior PHP Developer',
+    headerPills: ['Remote', 'B2B'],
+    salaryFormat: '18 000 - 24 000 PLN',
+    salaryDisclosed: true,
+    isNew: false,
+    technologyTags: [
+      {name: 'PHP', logoUrl: logoPlaceholder},
+      {name: 'Symfony', logoUrl: null},
+    ],
+  },
+  // empty: every optional field is short or omitted, salary falls back to the same string the real presenter uses
+  {
+    companyName: 'Nova',
+    companyLogoUrl: null,
+    jobOfferHref: '#',
+    jobOfferClickHref: '#',
+    jobOfferExposureHref: '#',
+    jobOfferTitle: 'PHP Dev',
+    headerPills: [],
+    salaryFormat: 'Nie podano $$$',
+    salaryDisclosed: false,
+    isNew: false,
+    technologyTags: [],
+  },
+  // full: very long company name and title, logo present, ten technology tags, the only one with the "Nowe" badge
+  {
+    companyName: 'International Multinational Technology & Consulting Solutions Group Corporation',
+    companyLogoUrl: logoPlaceholder,
+    jobOfferHref: '#',
+    jobOfferClickHref: '#',
+    jobOfferExposureHref: '#',
+    jobOfferTitle: 'Senior Staff Principal Full-Stack Software Engineering Architect Specializing in Distributed Systems, Cloud Infrastructure and Platform Reliability',
+    headerPills: ['Warszawa, +1', 'Hybrid'],
+    salaryFormat: '25 000 - 35 000 PLN',
+    salaryDisclosed: true,
+    isNew: true,
+    technologyTags: [
+      {name: 'PHP', logoUrl: logoPlaceholder},
+      {name: 'Symfony', logoUrl: null},
+      {name: 'Laravel', logoUrl: logoPlaceholder},
+      {name: 'Vue', logoUrl: null},
+      {name: 'TypeScript', logoUrl: logoPlaceholder},
+      {name: 'Docker', logoUrl: null},
+      {name: 'Kubernetes', logoUrl: logoPlaceholder},
+      {name: 'AWS', logoUrl: null},
+      {name: 'PostgreSQL', logoUrl: logoPlaceholder},
+      {name: 'Redis', logoUrl: null},
+    ],
+  },
+];

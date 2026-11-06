@@ -1,0 +1,48 @@
+@font-face {
+  font-family: 'Font Awesome 6 Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/font-awesome/fa-light-300.woff2?v12') format('woff2');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/font-awesome/fa-regular-400.woff2?v12') format('woff2');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  src: url('/fonts/font-awesome/fa-solid-900.woff2?v12') format('woff2');
+}
+
+.fa-light {
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 300;
+}
+
+.fa-regular {
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 400;
+}
+
+.fas, .fa-solid {
+  font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+}
+
+.fa-brands {
+  font-family: 'Font Awesome 6 Brands';
+  font-style: normal;
+}
+
+.fa-fw {
+  text-align: center;
+  width: 1.25em;
+}

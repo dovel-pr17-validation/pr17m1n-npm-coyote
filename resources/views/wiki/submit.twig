@@ -1,0 +1,89 @@
+{% extends 'wiki.base' %}
+{% block title %}
+    {% apply spaceless %}
+        {% if wiki.id is not null %}
+            Edycja strony {{ wiki.title }}
+        {% else %}
+            Dodaj nową stronę
+        {% endif %}
+
+        {{ parent() }}
+    {% endapply %}
+{% endblock %}
+
+{% block container %}
+    <div class="row">
+        <div class="col-sm-9">
+            {% if not wiki.id and user('reputation') < 1 %}
+                <p class="alert alert-danger">
+                    <strong>Uwaga!</strong> Zamierzasz dodać nową stronę w serwisie 4programmers.net.<br>
+                    Potrzebujesz minimum <a title="Zobacz, czym jest reputacja" href="{{ url('Pomoc/Konto/Reputacja') }}" style="text-decoration: underline">1 punktu reputacji</a>, aby dodac nową stronę w serwisie.
+                    <br><br>
+
+                    Być może najpierw mógłbyś pomóc w rozwoju już istniejących stron?
+                </p>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-header">
+                    Zarządzanie stroną
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.long_title) }}
+                    {{ form_row(form.parent_id) }}
+                    {{ form_row(form.excerpt) }}
+                    {{ form_row(form.is_locked) }}
+
+                    <div class="row form-group">
+                        <div class="col-12">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item"><a class="nav-link active" href="#body" role="tab" data-bs-toggle="tab">Treść</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#attachments" role="tab" data-bs-toggle="tab">Załączniki</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#preview" role="tab" data-bs-toggle="tab">Podgląd</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                {{ form_row(form.text) }}
+                                {{ form_row(form.attachments) }}
+
+                                <div role="tabpanel" class="tab-pane" id="preview"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ form_row(form.template) }}
+                    {{ form_row(form.comment) }}
+                    {{ form_row(form.submit) }}
+
+                    {{ form_end() }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            {{ render_block('job_ads') }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <script src="{{ cdn('js/legacy.js') }}"></script>
+
+    <script>
+        $(function() {
+            $('textarea[name="text"]').wikiEditor().fastSubmit().autogrow();
+
+            $('.nav').find('a[href="#preview"]').click(function() {
+                $.post('{{ route('wiki.preview') }}', {text: $('textarea[name="text"]').val()}, function(html) {
+                    $('#preview').html(html);
+
+                    Prism.highlightAll();
+                });
+            });
+        })
+    </script>
+{% endblock %}

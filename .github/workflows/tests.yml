@@ -1,0 +1,102 @@
+name: Tests
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  unit:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install composer dependencies
+        run: composer install --no-interaction --no-scripts --prefer-dist
+
+      - name: Run module unit tests
+        run: ./vendor/bin/phpunit ./modules/
+
+      - name: Run acceptance test unit tests
+        run: ./vendor/bin/phpunit ./features/
+
+      - name: Run acceptance tests (in-memory)
+        run: TEST_CHANNEL=in-memory ./vendor/bin/behat
+
+  acceptance:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup laravel
+        run: cp .env.default .env
+
+      - name: Run docker containers
+        run: docker compose -f docker-compose.yaml up -d
+
+      - name: Setup directory owner
+        run: sudo chown -R packer:packer ./ # User with UID 1000 on host machine
+
+      - name: Install coyote server
+        run: make composer-install migrate
+
+      - name: Run acceptance tests (integration driver)
+        run: docker compose exec -T php bash -c 'TEST_CHANNEL=integration vendor/bin/behat'
+
+      - name: Prepare application for acceptance tests
+        run: |
+          docker compose exec -T php yarn --cwd neon2/web install
+          docker compose exec -T php yarn install
+          docker compose exec -T php yarn run prod
+          docker compose exec -T php yarn --cwd web/harness/client install
+          docker compose exec -T php yarn --cwd web/harness/client vite build
+          docker compose exec -T php php artisan db:seed --class=AcceptanceTestSeeder
+
+      - name: Run acceptance tests (browser driver)
+        run: docker compose exec -T php bash -c 'TEST_CHANNEL=acceptance vendor/bin/behat'
+
+      - name: Upload acceptance test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-test-results
+          path: storage/screenshots/
+          retention-days: 2
+          if-no-files-found: ignore
+
+  integration:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup laravel
+        run: cp .env.default .env
+
+      - name: Run docker containers
+        run: docker compose -f docker-compose.yaml up -d
+
+      - name: Setup directory owner
+        run: sudo chown -R packer:packer ./ # User with UID 1000 on host machine
+
+      - name: Install coyote server
+        run: make composer-install migrate
+
+      - name: Prepare application for integration tests
+        run: docker compose exec -T php php artisan db:seed --class=IntegrationTestSeeder
+
+      - name: Run system integration tests
+        run: docker compose exec -T php bash -c './vendor/bin/phpunit ./tests/Integration/'

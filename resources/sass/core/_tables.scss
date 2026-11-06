@@ -1,0 +1,12 @@
+@charset "UTF-8";
+
+table {
+  @extend .table;
+  @extend .table-striped;
+
+  // styles for better column width adjustment
+  // @see https://github.com/adam-boduch/coyote/issues/347
+  td, th {
+    word-break: break-word;
+  }
+}

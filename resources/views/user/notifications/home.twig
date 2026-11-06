@@ -1,0 +1,44 @@
+{% extends 'user.base' %}
+{% block title %}Powiadomienia {{ parent() }}{% endblock %}
+
+{% block content %}
+  <h2>Powiadomienia</h2>
+
+  <div id="box-alerts" class="card">
+    <div class="card-body">
+      {% set head_date = '' %}
+
+      <nav class="mt-3 mb-3 d-flex justify-content-center">
+        {{ pagination.render()|raw }}
+      </nav>
+
+      {% for notification in pagination %}
+        {% set url = route('user.notifications.url', [notification.id]) %}
+
+        <div class="media {{ notification.is_read ? '' : 'unread' }}">
+          <a href="{{ notification.user.id ? route('profile', [notification.user.id]) : '#' }}" class="d-none d-sm-inline-block me-2">
+            <object data="{{ notification.photo|default('//') }}" title="{{ notification.user.name }}" type="image/png" class="d-block" style="width: 49px; height: 49px">
+              {{ user_avatar(notification.photo, notification.user.name) }}
+            </object>
+          </a>
+
+          <div class="media-body">
+            <header>
+              <h4 class="float-start"><a href="{{ url }}">{{ notification.headline }}</a></h4>
+              <small class="float-end">{{ notification.created_at|format_date }}</small>
+            </header>
+
+            <h3><a href="{{ url }}">{{ notification.subject }}</a></h3>
+            <p class="excerpt"><a href="{{ url }}">{{ notification.excerpt }}</a></p>
+          </div>
+        </div>
+      {% else %}
+        <p class="alert alert-info">Brak powiadomień.</p>
+      {% endfor %}
+
+      <nav class="mt-3 mb-3 d-flex justify-content-center">
+        {{ pagination.render()|raw }}
+      </nav>
+    </div>
+  </div>
+{% endblock %}

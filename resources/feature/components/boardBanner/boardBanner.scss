@@ -1,0 +1,115 @@
+@use "../../lookAndFeel/style-guide" as style;
+@use "../../theme/theme";
+
+@mixin borderGradient($borderFrom, $borderTo, $backgroundRotate, $backgroundFrom, $backgroundTo) {
+  border: 1px solid transparent;
+  background: $backgroundFrom;
+  background: (
+          linear-gradient($backgroundRotate, $backgroundFrom 25%, $backgroundTo 60%) padding-box,
+          linear-gradient(135deg, $borderFrom, $borderTo) border-box
+  );
+}
+
+.board-banner {
+  font-family: 'Inter Tight', sans-serif;
+  border-radius: 8px;
+  padding: 16px;
+
+  @include theme.light {
+    @include borderGradient(rgba(0, 165, 56, 0.4), rgba(255, 255, 255, 0.4), 135deg, #e7f6ec, white);
+  }
+
+  @include theme.dark {
+    @include borderGradient(#00a538, #121314, 180deg+22.5deg, #121314, #0d3f1f);
+  }
+
+  .board-banner__squiggle {
+    position: relative;
+    z-index: 1;
+    margin: -16px;
+    margin-bottom: 12px;
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .grid-cell {
+      position: absolute;
+      width: 20%;
+      height: 25%;
+      border-radius: 16px;
+      background-size: contain;
+
+      &.grid-cell-3-0 {
+        background-image: url('/img/boardBanner/candidate2.png');
+        top: 0;
+        left: 60%;
+      }
+
+      &.grid-cell-1-2 {
+        background-image: url('/img/boardBanner/candidate1.png');
+        left: 20%;
+        top: 50%;
+      }
+
+      &.grid-cell-4-3 {
+        background-image: url('/img/boardBanner/candidate3.png');
+        top: 75%;
+        left: 80%;
+      }
+    }
+  }
+
+  &.board-banner--short {
+    .board-banner__squiggle {
+      display:none;
+    }
+  }
+
+  .board-banner__logo {
+    width: 112.5px;
+    height: 20px;
+    margin-bottom: 8px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    @include theme.light {
+      background-image: url('/img/logo.light.svg');
+    }
+    @include theme.dark {
+      background-image: url('/img/logo.dark.svg');
+    }
+  }
+
+  .board-banner__title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 8px;
+    @include theme.property(color, style.$neutral-950, white);
+  }
+
+  .board-banner__subtitle {
+    font-size: 12px;
+    margin-bottom: 8px;
+    @include theme.property(color, style.$neutral-600, style.$neutral-200);
+  }
+
+  .board-banner__apply {
+    margin-top: 16px;
+    border-radius: 8px;
+    width: 100%;
+    font-weight: 600;
+
+    strong {
+      font-weight: 600;
+    }
+  }
+}
+
+.on-theme-light {
+  @include theme.property(display, block, none);
+}
+
+.on-theme-dark {
+  @include theme.property(display, none, block);
+}

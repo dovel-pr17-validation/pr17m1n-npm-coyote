@@ -1,0 +1,49 @@
+{% if can('wiki-admin') %}
+  {% if not wiki.deleted_at %}
+    <li>
+      <a href="#modal-delete" data-bs-toggle="modal">
+        {{ icon('wikiRemove') }}
+        Usuń stronę
+      </a>
+    </li>
+    {% if categories|length > 1 %}
+      <li>
+        <a href="#modal-unlink" data-bs-toggle="modal" title="Artykuł nie zostanie usunięty, a jedynie jego kopia" class="dropdown-item">
+          {{ icon('wikiCopyRemove') }}
+          Usuń tylko tę kopię strony
+        </a>
+      </li>
+    {% endif %}
+    <li>
+      <a href="{{ route('wiki.purge', [wiki.id]) }}">
+        {{ icon('wikiClearCache') }}
+        Usuń cache
+      </a>
+    </li>
+    <li>
+      <a href="{{ route('wiki.clone', [wiki.id]) }}">
+        {{ icon('wikiCopyCreate') }}
+        Utwórz kopię
+      </a>
+    </li>
+    <li>
+      <a href="{{ route('wiki.move', [wiki.id]) }}">
+        {{ icon('wikiMove') }}
+        Przenieś stronę
+      </a>
+    </li>
+    <li>
+      <a href="{{ route('wiki.submit') }}?parentId={{ wiki.id }}">
+        {{ icon('wikiChildCreate') }}
+        Utwórz podstronę
+      </a>
+    </li>
+  {% else %}
+    <li>
+      <a href="#modal-restore" data-bs-toggle="modal">
+        {{ icon('wikiVersionRestore') }}
+        Przywróć usuniętą wersję
+      </a>
+    </li>
+  {% endif %}
+{% endif %}

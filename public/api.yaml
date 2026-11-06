@@ -1,0 +1,379 @@
+openapi: 3.0.0
+info:
+  title: '4programmers.net API'
+  version: '1.0'
+  description: "This is 4programmers.net OpenAPI documentation."
+servers:
+  - url: https://api.4programmers.net/v1
+    description: Production server
+  - url: https://api.4programmers.dev/v1
+    description: Stagging server
+paths:
+  /login:
+    post:
+      summary: "Login to retrieve authorization token"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - password
+              properties:
+                name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        200:
+          description: "Login token"
+          content:
+            application/json:
+              schema:
+                type: object
+        422:
+          description: "Validation errors"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /microblogs:
+    get:
+      summary: "Get all microblogs with pagination"
+      tags:
+        - "microblog"
+      parameters:
+        - name: page
+          required: false
+          in: "query"
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "Microblogs objects"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: './api/schemas/microblog.yaml'
+                  meta:
+                    type: object
+                    $ref: '#/components/schemas/Meta'
+
+  /microblogs/{id}:
+    get:
+      summary: "Get microblog by ID"
+      tags:
+        - "microblog"
+      parameters:
+        - name: id
+          required: true
+          in: "path"
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "Microblog object"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './api/schemas/microblog.yaml'
+
+  /jobs:
+    get:
+      summary: "Get all job offers with pagination"
+      tags:
+        - "job"
+      responses:
+        200:
+          description: "Job objects"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: './api/schemas/job.yaml'
+                  meta:
+                    type: object
+                    $ref: '#/components/schemas/Meta'
+    post:
+      summary: "Create job offer"
+      tags:
+        - "job"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/JobBody'
+      responses:
+        201:
+          description: "Job successfully created"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './api/schemas/job.yaml'
+        422:
+          description: "Validation errors"
+          content:
+            application/json:
+              schema:
+                type: object
+        401:
+          description: "No sufficient funds to post this job offer"
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /jobs/{id}:
+    get:
+      summary: "Get job offer by ID"
+      tags:
+        - "job"
+      parameters:
+        - name: id
+          required: true
+          in: "path"
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "Job object"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './api/schemas/job.yaml'
+    put:
+      summary: "Update existing job offer"
+      tags:
+        - "job"
+      parameters:
+        - name: id
+          required: true
+          in: "path"
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/JobBody'
+      responses:
+        200:
+          description: "Job successfully updated"
+          content:
+            application/json:
+              schema:
+                type: object
+        422:
+          description: "Validation errors"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './api/schemas/job.yaml'
+
+  /topics:
+    get:
+      summary: "Get list of all topics"
+      tags:
+        - forum
+      parameters:
+        - name: sort
+          required: false
+          in: query
+          description: "Default sort by last topic ID."
+          schema:
+            type: string
+            enum: [id, last_post_id]
+        - name: order
+          required: false
+          in: query
+          description: "Default sort order is DESC."
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        200:
+          description: "Topic object"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: './api/schemas/topic.yaml'
+                  meta:
+                    type: object
+                    $ref: '#/components/schemas/Meta'
+  /topics/{id}:
+    get:
+      summary: "Get topic by ID"
+      tags:
+        - forum
+      parameters:
+        - name: id
+          required: true
+          in: "path"
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "Topic object"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './api/schemas/topic.yaml'
+
+  /forums:
+    get:
+      summary: "Get list of all forum categories"
+      tags:
+        - forum
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Forum object"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './api/schemas/forum.yaml'
+
+  /posts:
+    get:
+      summary: "Get list of all posts"
+      tags:
+        - forum
+      parameters:
+        - name: order
+          required: false
+          in: query
+          description: "Default sort order is DESC."
+          schema:
+            type: string
+            enum: [ asc, desc ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "Post object"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: './api/schemas/post.yaml'
+                  meta:
+                    type: object
+                    $ref: '#/components/schemas/Meta'
+
+  /posts/{id}:
+    get:
+      summary: "Get post by ID"
+      tags:
+        - forum
+      parameters:
+        - name: id
+          required: true
+          in: "path"
+          schema:
+            type: integer
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "Post object"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: './api/schemas/post.yaml'
+
+components:
+  requestBodies:
+    JobBody:
+      description: A JSON object containing job information
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - title
+            $ref: './api/schemas/job.yaml'
+
+  schemas:
+    JobSchema:
+      $ref: './api/schemas/job.yaml'
+
+    FirmSchema:
+      $ref: './api/schemas/firm.yaml'
+
+    LocationSchema:
+      $ref: './api/schemas/location.yaml'
+
+    TagSchema:
+      $ref: './api/schemas/tag.yaml'
+
+    MicroblogSchema:
+      $ref: './api/schemas/microblog.yaml'
+
+    TopicSchema:
+      $ref: './api/schemas/topic.yaml'
+
+    PostSchema:
+      $ref: './api/schemas/post.yaml'
+
+    Meta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          minimum: 1
+        from:
+          type: integer
+          minimum: 1
+        last_page:
+          type: integer
+          minimum: 1
+        path:
+          type: string
+        per_page:
+          type: integer
+        to:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 1
+
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

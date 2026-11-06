@@ -1,0 +1,17 @@
+@import "../../feature/theme/theme";
+
+ul.microblog-comment-list {
+  li a {
+    &.vote-active {
+      color: #90ba1d;
+
+      &:hover {
+        color: #4c6210;
+      }
+    }
+  }
+}
+
+.microblog-comment-action {
+  cursor: pointer;
+}

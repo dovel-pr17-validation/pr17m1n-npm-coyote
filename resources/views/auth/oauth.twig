@@ -1,0 +1,32 @@
+<div class="d-flex justify-content-between">
+  <div class="flex-grow-1 mx-1">
+    <button class="btn-google" data-url="{{ route('oauth', ['google']) }}">
+      <span class="icon">
+        {{ icon('loginGoogle') }}
+      </span>
+      <span class="text">
+        Google
+      </span>
+    </button>
+  </div>
+
+  <div class="flex-grow-1 mx-1">
+    <button class="btn-fb" data-url="{{ route('oauth', ['facebook']) }}">
+      <span class="icon">
+        {{ icon('loginFacebook') }}
+      </span>
+      Facebook
+    </button>
+  </div>
+
+  <div class="flex-grow-1 mx-1">
+    <button class="btn-github" data-url="{{ route('oauth', ['github']) }}">
+      <span class="icon">
+        {{ icon('loginGithub') }}
+      </span>
+      GitHub
+    </button>
+  </div>
+</div>
+
+<hr>

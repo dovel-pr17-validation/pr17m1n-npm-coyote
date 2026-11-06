@@ -1,0 +1,164 @@
+@charset "UTF-8";
+@import "../../core/thumbnail";
+
+// Sidebar hints
+// --------------------------------------------
+
+#hint-container {
+  margin-top: 23px;
+}
+
+.sidebar-hint p {
+  font-size: 13px;
+}
+
+// Fixed navigation bar with "next", "previous" buttons
+// ---------------------------------------------------------
+
+#form-fixed {
+  background-color: #fafafa;
+  border-top: 2px solid $card-border-color;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 0;
+  z-index: 1000;
+}
+
+// Submit form
+// --------------------------------------------
+
+.job-form {
+  .card-header {
+    font-size: $font-size-lg;
+  }
+
+  .col-form-label, .checkbox label {
+    color: $gray;
+  }
+
+  .form-text {
+    font-size: $font-size-sm;
+    margin-bottom: .4rem;
+  }
+
+  .benefits,
+  .features {
+    li {
+      font-size: $font-size-base;
+      cursor: pointer;
+      padding-left: 0;
+
+      .btn-delete {
+        position: absolute;
+        top: 13px;
+        right: 50px;
+        border: 0;
+      }
+    }
+
+    input[type=checkbox] {
+      display: none;
+    }
+
+    input[type=text] {
+      display: inline-block;
+      width: 90%;
+      margin-left: 10px;
+    }
+
+    .col-form-label {
+      text-align: left;
+    }
+  }
+
+  .features {
+    li {
+      height: 45px;
+    }
+  }
+}
+
+.mce-tinymce {
+  width: 95% !important;
+}
+
+input[name=salary_from],
+input[name=salary_to],
+input[name=deadline] {
+  width: 95px;
+}
+
+select[name=currency_id],
+select[name=rate],
+select[name=employment],
+select[name=employees],
+select[name=founded],
+select[name=is_gross] {
+  width: auto;
+}
+
+// Tag icon in tag input field
+// ----------------------------------------------
+
+.has-feedback label ~ .fa.form-control-feedback {
+  top: 30px;
+  font-size: $font-size-lg;
+  color: $gray;
+}
+
+#map {
+  height: 300px;
+  margin-bottom: 10px;
+}
+
+.plan-tooltip-wrapper {
+  cursor: help;
+  position: relative;
+
+  > .plan-tooltip {
+    position: absolute;
+    background-color: #fff;
+    border: 2px solid $card-border-color;
+    padding: 5px;
+    display: none;
+    right: -450px;
+    top: -118px;
+    z-index: 1000;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
+    border-radius: .375rem;
+
+    &:before, &:after {
+      right: 100%;
+      top: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    &:after {
+      border-color: rgba(255, 255, 255, 0);
+      border-right-color: #fff;
+      border-width: 10px;
+      margin-top: -10px;
+    }
+
+    &:before {
+      border-color: rgba(208, 208, 208, 0);
+      border-right-color: $card-border-color;
+      border-width: 13px;
+      margin-top: -13px;
+    }
+  }
+
+  &:hover {
+    > .plan-tooltip {
+      display: block;
+    }
+  }
+}
+

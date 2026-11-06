@@ -1,0 +1,343 @@
+x-env: &env
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY_FILE: /run/secrets/APP_KEY_FILE
+
+  DB_CONNECTION: pgsql
+  DB_PORT: 5432
+  DB_HOST: db
+  DB_DATABASE: coyote
+  DB_USERNAME: coyote
+  DB_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD_FILE
+
+  ELASTICSEARCH_HOST: elasticsearch
+  REDIS_HOST: redis
+  BROADCAST_DRIVER: redis
+  QUEUE_DRIVER: redis
+  LOG_CHANNEL: gelf
+  
+  ACCEPTANCE_TEST: production
+
+  AWS_ACCESS_KEY_ID_FILE: /run/secrets/AWS_ACCESS_KEY_ID_FILE
+  AWS_SECRET_ACCESS_KEY_FILE: /run/secrets/AWS_SECRET_ACCESS_KEY_FILE
+  MINIO_ENDPOINT: http://minio:9000/
+
+  SENTRY_DSN_FILE: /run/secrets/SENTRY_DSN_FILE
+
+  RECAPTCHA_KEY_FILE: /run/secrets/RECAPTCHA_KEY_FILE
+  RECAPTCHA_SECRET_FILE: /run/secrets/RECAPTCHA_SECRET_FILE
+
+  STRIPE_KEY_FILE: /run/secrets/STRIPE_KEY_FILE
+  STRIPE_SECRET_FILE: /run/secrets/STRIPE_SECRET_FILE
+  STRIPE_ENDPOINT_SECRET_FILE: /run/secrets/STRIPE_ENDPOINT_SECRET_FILE
+
+  GITHUB_CLIENT_ID_FILE: /run/secrets/GITHUB_CLIENT_ID_FILE
+  GITHUB_SECRET_ID_FILE: /run/secrets/GITHUB_SECRET_ID_FILE
+
+  GOOGLE_CLIENT_ID_FILE: /run/secrets/GOOGLE_CLIENT_ID_FILE
+  GOOGLE_SECRET_ID_FILE: /run/secrets/GOOGLE_SECRET_ID_FILE
+  GOOGLE_MAPS_KEY_FILE: /run/secrets/GOOGLE_MAPS_KEY_FILE
+
+  FACEBOOK_CLIENT_ID_FILE: /run/secrets/FACEBOOK_CLIENT_ID_FILE
+  FACEBOOK_SECRET_ID_FILE: /run/secrets/FACEBOOK_SECRET_ID_FILE
+
+  VAPID_PUBLIC_KEY_FILE: /run/secrets/VAPID_PUBLIC_KEY_FILE
+  VAPID_PRIVATE_KEY_FILE: /run/secrets/VAPID_PRIVATE_KEY_FILE
+  
+  TWILIO_ACCOUNT_SID_FILE: /run/secrets/TWILIO_ACCOUNT_SID_FILE
+  TWILIO_AUTH_TOKEN_FILE: /run/secrets/TWILIO_AUTH_TOKEN_FILE
+  TWILIO_VERIFICATION_ID_FILE: /run/secrets/TWILIO_VERIFICATION_ID_FILE
+
+x-secrets: &secrets
+  - APP_KEY_FILE
+  - POSTGRES_PASSWORD_FILE
+  - AWS_ACCESS_KEY_ID_FILE
+  - AWS_SECRET_ACCESS_KEY_FILE
+  - SENTRY_DSN_FILE
+  - RECAPTCHA_KEY_FILE
+  - RECAPTCHA_SECRET_FILE
+  - GITHUB_CLIENT_ID_FILE
+  - GITHUB_SECRET_ID_FILE
+  - GOOGLE_CLIENT_ID_FILE
+  - GOOGLE_SECRET_ID_FILE
+  - GOOGLE_MAPS_KEY_FILE
+  - FACEBOOK_CLIENT_ID_FILE
+  - FACEBOOK_SECRET_ID_FILE
+  - STRIPE_KEY_FILE
+  - STRIPE_SECRET_FILE
+  - STRIPE_ENDPOINT_SECRET_FILE
+  - VAPID_PUBLIC_KEY_FILE
+  - VAPID_PRIVATE_KEY_FILE
+  - TWILIO_ACCOUNT_SID_FILE
+  - TWILIO_AUTH_TOKEN_FILE
+  - TWILIO_VERIFICATION_ID_FILE
+
+services:
+  db:
+    image: postgres:18-alpine
+    command: postgres -c config_file=/etc/postgresql/postgresql.auto.conf
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data:z
+    environment:
+      POSTGRES_USER: coyote
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD_FILE
+      POSTGRES_DB: coyote
+    networks:
+      - coyote
+    secrets:
+      - POSTGRES_PASSWORD_FILE
+    logging:
+      driver: "json-file"
+      options:
+        tag: postgres
+        max-size: 10m
+
+  php:
+    image: 4programmers/coyote:latest
+    volumes:
+      - codebase:/var/www
+    environment:
+      <<: *env
+      DB_MIGRATE: "true"
+    secrets: *secrets
+    deploy:
+      replicas: 2
+    healthcheck:
+      test: [ "CMD", "php", "artisan", "help" ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    networks:
+      - coyote
+    logging:
+      driver: "json-file"
+      options:
+        tag: php
+        max-size: 10m
+
+  worker:
+    image: 4programmers/coyote:latest
+    networks:
+      - coyote
+    command: php artisan queue:work --delay=5 --tries=3 --no-interaction redis
+    deploy:
+      replicas: 2
+    environment: *env
+    secrets: *secrets
+    logging:
+      driver: "json-file"
+      options:
+        tag: worker
+        max-size: 10m
+
+  cron:
+    image: 4programmers/coyote:latest
+    entrypoint: cron -f -l 8
+    environment: *env
+    secrets: *secrets
+    volumes:
+      - codebase:/var/www
+    networks:
+      - coyote
+    logging:
+      driver: "json-file"
+      options:
+        tag: cron
+        max-size: 10m
+
+  nginx:
+    image: nginx:1.17
+    volumes:
+      - codebase:/var/www/
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    ports:
+      - 80:80
+    networks:
+      - coyote
+    logging:
+      driver: "json-file"
+      options:
+        tag: nginx
+        max-size: 10m
+
+  redis:
+    image: redis:6-alpine
+    command: redis-server --appendonly no --save
+    networks:
+      - coyote
+
+  elasticsearch:
+    image: elasticsearch:6.8.6
+    volumes:
+      - elasticsearch6:/usr/share/elasticsearch/data
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+    networks:
+      - coyote
+    logging:
+      driver: "json-file"
+      options:
+        tag: elasticsearch
+        max-size: 10m
+
+  minio:
+    image: 4programmers/minio:RELEASE.2020-01-03T19-12-21Z
+    volumes:
+      - minio:/data
+    environment:
+      - MINIO_ACCESS_KEY_FILE=AWS_ACCESS_KEY_ID_FILE
+      - MINIO_SECRET_KEY_FILE=AWS_SECRET_ACCESS_KEY_FILE
+    command: server /data
+    secrets:
+      - AWS_ACCESS_KEY_ID_FILE
+      - AWS_SECRET_ACCESS_KEY_FILE
+    networks:
+      - coyote
+    deploy:
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+    ports:
+      - 39000:9000
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        tag: minio
+        max-size: 10m
+
+  mongo:
+    image: mongo:3
+    volumes:
+      - mongo:/data/db
+    networks:
+      - coyote
+
+  graylog:
+    image: graylog/graylog:3.1
+    environment:
+      - GRAYLOG_PASSWORD_SECRET_FILE=/run/secrets/GRAYLOG_PASSWORD_SECRET_FILE
+      - GRAYLOG_ROOT_PASSWORD_SHA2__FILE=/run/secrets/GRAYLOG_ROOT_PASSWORD_SHA2_FILE
+      - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.4programmers.dev/
+    networks:
+      - coyote
+    secrets:
+      - GRAYLOG_ROOT_PASSWORD_SHA2_FILE
+      - GRAYLOG_PASSWORD_SECRET_FILE
+    ports:
+      - 12201:12201
+      - 12201:12201/udp
+
+  fluentbit:
+    image: fluent/fluent-bit:1.3-debug
+    volumes:
+      - ./docker/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - /var/lib/docker/containers:/var/log/containers
+    networks:
+      - coyote
+
+  websocket:
+    image: 4programmers/websocket:latest
+    networks:
+      - coyote
+    tty: true
+    environment:
+      PORT: "8888"
+      REDIS_HOST: "redis"
+    secrets:
+      - APP_KEY_FILE
+    logging:
+      driver: "json-file"
+      options:
+        tag: websocket
+        max-size: 10m
+
+  es:
+    image: 4programmers/coyote-es:1.2.1
+    networks:
+      - coyote
+    tty: true
+    environment:
+      PORT: "3500"
+      ELASTICSEARCH_HOST: "elasticsearch"
+      INDEX: "coyote"
+      APP_KEY_FILE: /run/secrets/APP_KEY_FILE
+    secrets:
+      - APP_KEY_FILE
+    logging:
+      driver: "json-file"
+      options:
+        tag: node-es
+        max-size: 10m
+
+volumes:
+  postgres:
+  elasticsearch6:
+  minio:
+  codebase:
+  mongo:
+  graylog:
+
+networks:
+  coyote:
+    name: coyote
+
+secrets:
+  APP_KEY_FILE:
+    external: true
+  AWS_ACCESS_KEY_ID_FILE:
+    external: true
+  AWS_SECRET_ACCESS_KEY_FILE:
+    external: true
+  POSTGRES_PASSWORD_FILE:
+    external: true
+  WS_PROXY_FILE:
+    external: true
+  SENTRY_DSN_FILE:
+    external: true
+  RECAPTCHA_KEY_FILE:
+    external: true
+  RECAPTCHA_SECRET_FILE:
+    external: true
+  GITHUB_CLIENT_ID_FILE:
+    external: true
+  GITHUB_SECRET_ID_FILE:
+    external: true
+  GOOGLE_CLIENT_ID_FILE:
+    external: true
+  GOOGLE_SECRET_ID_FILE:
+    external: true
+  GOOGLE_MAPS_KEY_FILE:
+    external: true
+  FACEBOOK_CLIENT_ID_FILE:
+    external: true
+  FACEBOOK_SECRET_ID_FILE:
+    external: true
+  GRAYLOG_ROOT_PASSWORD_SHA2_FILE:
+    external: true
+  GRAYLOG_PASSWORD_SECRET_FILE:
+    external: true
+  STRIPE_KEY_FILE:
+    external: true
+  STRIPE_SECRET_FILE:
+    external: true
+  STRIPE_ENDPOINT_SECRET_FILE:
+    external: true
+  VAPID_PUBLIC_KEY_FILE:
+    external: true
+  VAPID_PRIVATE_KEY_FILE:
+    external: true
+  TWILIO_ACCOUNT_SID_FILE:
+    external: true
+  TWILIO_AUTH_TOKEN_FILE:
+    external: true
+  TWILIO_VERIFICATION_ID_FILE:
+    external: true

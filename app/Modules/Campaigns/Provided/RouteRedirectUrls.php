@@ -1,0 +1,18 @@
+<?php
+namespace Coyote\Modules\Campaigns\Provided;
+
+use Modules\Campaigns\ForRedirectUrls;
+
+class RouteRedirectUrls implements ForRedirectUrls {
+    public function redirectUrl(int $variantId): string {
+        return route('campaigns.click', [$variantId]);
+    }
+
+    public function exposeUrl(int $variantId): string {
+        return route('campaigns.expose', [$variantId]);
+    }
+
+    public function adblockUrl(int $variantId): string {
+        return route('campaigns.adblock', [$variantId]);
+    }
+}

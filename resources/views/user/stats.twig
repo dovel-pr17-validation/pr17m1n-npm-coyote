@@ -1,0 +1,46 @@
+{% extends 'user.base' %}
+{% block title %}Statystyki moich postów{{ parent() }}{% endblock %}
+
+{% import 'legacyComponents.widgets' as widgets %}
+
+{% block content %}
+  <h2>Statystyki moich postów</h2>
+
+  <div id="box-start" class="card">
+    <div class="card-body">
+      {{ grid(grid) }}
+    </div>
+  </div>
+{% endblock %}
+
+{% block body %}
+  {{ parent() }}
+
+  {{ widgets.jquery() }}
+
+  <script>
+    $(function () {
+      $('#filter-form').find('table').append('<tfoot><tr><td></td><td id="total-posts"></td><td id="total-votes"></td><td></td><td></td></tr></tfoot>');
+
+      function applyStats() {
+        var totalPosts = 0, totalVotes = 0;
+
+        $('.switcher:checked').each(function () {
+          var parent = $(this).parents('tr');
+
+          totalPosts += parseInt(parent.children('td:eq(1)').text()) || 0;
+          totalVotes += parseInt(parent.children('td:eq(2)').text()) || 0;
+        });
+
+        $('#total-posts').text(totalPosts);
+        $('#total-votes').text(totalVotes);
+      }
+
+      $('.switcher').change(function () {
+        applyStats();
+      });
+
+      applyStats();
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'job.base' %}
+
+{%- block title -%}
+  Moje ogłoszenia
+  {{ parent() }}
+{%- endblock -%}
+
+{% from 'titleBanner.titleBanner' import titleBanner %}
+
+{% block container %}
+  <div id="js-job">
+    <div class="row">
+      <div class="col-md-9 col-12">
+        <div class="neon-modern mb-3">
+          {{ titleBanner(title:'Oferty Pracy w IT - Odwiedza nas ponad 150 tys. programistów miesięcznie', crumbs:breadcrumbs) }}
+        </div>
+        <vue-tabs :items="tabs" current-tab="/Praca/Moje" class="mt-4 mb-4"></vue-tabs>
+        {% include 'job.partials.skeletons' %}
+        <div v-cloak v-if="jobs.data.length === 0" class="card card-body p-2">
+          <p class="text-center lead mt-4">
+            Nie znaleźliśmy żadnych Twoich ogłoszeń.
+            <a href="{{ route('job.submit') }}">Dodaj swoje pierwsze ogłoszenie już teraz.</a>
+          </p>
+        </div>
+        <nav class="mb-2">
+          <vue-pagination :current-page="jobs.meta.current_page" :total-pages="jobs.meta.last_page" @change="changePage"></vue-pagination>
+        </nav>
+      </div>
+      <div class="col-md-3 d-none d-sm-block">
+        <div class="neon-modern">
+          <div class="title-banner title-banner--gradient-left neon-rounded p-4">
+            <ul class="title-banner__crumbs">
+              <li class="title-banner__crumbs-item">
+                Dla Pracodawców
+              </li>
+            </ul>
+            <div class="title-banner__title">
+              <a class="btn btn-primary jobboard-add-offer-list" href="{{ route('job.business') }}" style="width:100%;">
+                Dodaj ofertę pracy od 0zł
+              </a>
+            </div>
+          </div>
+        </div>
+      {{ render_block('job_ads') }}
+    </div>
+    <vue-notifications></vue-notifications>
+  </div>
+  <script type="text/javascript">
+    var data = {
+      jobs: {{ jobs|json_encode|raw }},
+      subscribed: {{ subscribed|json_encode|raw }},
+      input: {{ input|json_encode|raw }},
+      skeleton: false,
+    };
+  </script>
+{% endblock %}

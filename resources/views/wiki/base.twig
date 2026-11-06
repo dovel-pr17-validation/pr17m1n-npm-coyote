@@ -1,0 +1,14 @@
+{% extends 'layout' %}
+
+{% block body %}
+  {% import 'legacyComponents.modals' as modals %}
+  {% import 'legacyComponents.widgets' as widgets %}
+
+  {{ widgets.jquery() }}
+
+  {{ parent() }}
+
+  <script src="{{ cdn('js/wiki.js') }}"></script>
+
+  {{ modals.alert('Należy się zalogować, aby dodać ogłoszenie do ulubionych', 'Logowanie', 'modal-unauthorized') }}
+{% endblock %}

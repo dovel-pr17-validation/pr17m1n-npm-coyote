@@ -1,0 +1,171 @@
+services:
+  db:
+    image: postgres:18-alpine
+    volumes:
+      - postgres:/var/lib/postgresql:z
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      TZ: "Europe/Warsaw"
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  php:
+    image: 4programmers/php-node:8.5.12-26
+    environment:
+      - ENABLE_XDEBUG=$ENABLE_XDEBUG
+      - XDEBUG_HOST=$XDEBUG_HOST
+      - XDEBUG_PORT=$XDEBUG_PORT
+    volumes:
+      - ./:/var/www
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  cron:
+    image: 4programmers/php-node:8.5.12-26
+    user: nginx
+    volumes:
+      - ./:/var/www
+    entrypoint: cron -f -l 8
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  nginx:
+    image: nginx:1.17
+    ports:
+      - 8880:80
+    volumes:
+      - ./docker/nginx/:/etc/nginx/conf.d/
+      - ./:/var/www
+    working_dir: /var/www
+    depends_on:
+      - php
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  redis:
+    image: redis:6-alpine
+    command: redis-server --appendonly no --save
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  elasticsearch:
+    image: elasticsearch:6.8.6
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  minio:
+    image: 4programmers/minio:RELEASE.2020-01-03T19-12-21Z
+    volumes:
+      - minio:/data
+    environment:
+      MINIO_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
+      MINIO_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
+    command: server /data
+    ports:
+      - 39000:9000
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  selenium:
+    image: selenium/standalone-chrome:151.0-20260808
+    depends_on:
+      - nginx
+    volumes:
+      - /dev/shm:/dev/shm
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  createbuckets:
+    image: 4programmers/mc:RELEASE.2025-05-21T01-59-54Z # For docker 24.0
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set minio http://minio:9000 minio minio123 --api s3v4;
+        for i in $$(seq 60); do mc ls minio > /dev/null && break; sleep 1; done;
+        mc mb minio/public;
+        mc mb minio/local;
+        mc anonymous set public minio/public;
+        exit 0;
+      "
+    logging:
+      options:
+        max-size: 10m
+    networks:
+      - coyote
+
+  es:
+    image: 4programmers/coyote-es:1.2.1
+    tty: true
+    networks:
+      - coyote
+    logging:
+      options:
+        max-size: 10m
+    environment:
+      PORT: 3500
+      APP_KEY: $APP_KEY
+      ELASTICSEARCH_HOST: $ELASTICSEARCH_HOST
+      INDEX: $ELASTICSEARCH_INDEX
+
+  websocket:
+    image: 4programmers/websocket:latest
+    tty: true
+    networks:
+      - coyote
+    ports:
+      - 8888:8888
+    logging:
+      options:
+        max-size: 10m
+    environment:
+      PORT: 8888
+      REDIS_HOST: $REDIS_HOST
+      APP_KEY: $APP_KEY
+
+volumes:
+  postgres:
+  elasticsearch:
+  minio:
+  mongo:
+  graylog:
+
+networks:
+  coyote:
+    name: coyote

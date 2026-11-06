@@ -1,0 +1,91 @@
+<?php
+namespace Coyote\Modules\Campaigns;
+
+use Coyote\Http\Middleware\AcceptanceTestOnly;
+use Coyote\Modules\Campaigns\Eloquent\EloquentCampaignsStore;
+use Coyote\Modules\Campaigns\Provided\AuthPriviligedUsers;
+use Coyote\Modules\Campaigns\Provided\CarbonCurrentDate;
+use Coyote\Modules\Campaigns\Provided\CloudflareVoivodeship;
+use Coyote\Modules\Campaigns\Provided\RouteRedirectUrls;
+use Coyote\Modules\Campaigns\Provided\TimeRotatingBanners;
+use Coyote\Modules\Campaigns\User\Http\CampaignsController;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Modules\Campaigns;
+use Modules\Campaigns\CampaignBannersFacade;
+use Modules\Campaigns\ForCampaignBanners;
+use Modules\Campaigns\ForRedirectUrls;
+use Modules\Campaigns\Store\CampaignsStore;
+use Psr\Clock\ClockInterface;
+use Symfony;
+
+class CampaignsServiceProvider extends ServiceProvider {
+    public function boot(): void {
+        $this->app->instance(
+            Campaigns\ForPriviligedUsers::class,
+            new AuthPriviligedUsers());
+
+        $this->app->bind(
+            ClockInterface::class,
+            fn() => new Symfony\Component\Clock\Clock());
+
+        $this->app->bind(
+            Campaigns\ForRotatingBanners::class,
+            TimeRotatingBanners::class);
+
+        $this->app->bind(
+            CampaignsStore::class,
+            EloquentCampaignsStore::class);
+
+        $this->app->bind(
+            Campaigns\ForCurrentDate::class,
+            CarbonCurrentDate::class);
+
+        $this->app->bind(
+            ForRedirectUrls::class,
+            RouteRedirectUrls::class);
+
+        $this->app->bind(
+            Campaigns\ForUserVoivodeship::class,
+            CloudflareVoivodeship::class);
+
+        $this->app->bind(
+            ForCampaignBanners::class,
+            CampaignBannersFacade::class);
+
+        $router = $this->app->make(Router::class);
+        $this->registerRoutes($router);
+        $this->registerRoutesAcceptanceTest($router);
+    }
+
+    private function registerRoutes(Router $router): void {
+        $router
+            ->get('/campaigns/{variantId}', [CampaignsController::class, 'click'])
+            ->name('campaigns.click');
+        $router
+            ->post('/campaigns/{variantId}/expose', [CampaignsController::class, 'expose'])
+            ->name('campaigns.expose');
+        $router
+            ->post('/campaigns/{variantId}/adblock', [CampaignsController::class, 'adblock'])
+            ->name('campaigns.adblock');
+    }
+
+    private function registerRoutesAcceptanceTest(Router $router): void {
+        $router
+            ->middleware(AcceptanceTestOnly::class)
+            ->group($this->registerRoutesHarness(...));
+    }
+
+    private function registerRoutesHarness(Router $router): void {
+        $router
+            ->post('/harness/campaigns/reset', function (EloquentCampaignsStore $store) {
+                $store->removeCampaigns();
+                return response()->noContent();
+            });
+        $router
+            ->post('/harness/campaigns/rotation-seed', function (TimeRotatingBanners $rotation) {
+                $rotation->overrideSeed(request()->input('seed'));
+                return response()->noContent();
+            });
+    }
+}

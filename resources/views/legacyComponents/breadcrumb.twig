@@ -1,0 +1,29 @@
+<div class="breadcrumb-container">
+  <div class="breadcrumb-list">
+    <span class="breadcrumb-list-item">
+      <a href="{{ root_href }}" class="d-none d-sm-inline-block">
+        {{ root_name }}
+      </a>
+      <a href="{{ root_href }}" class="d-inline-block d-sm-none">
+        4p
+      </a>
+    </span>
+    {% for breadcrumb in breadcrumbs %}
+      <span class="breadcrumb-list-item">
+        {% if breadcrumb.leaf %}
+          {% if breadcrumb.leafWithLink %}
+            <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>
+          {% else %}
+            <span class="leaf">{{ breadcrumb.name }}</span>
+          {% endif %}
+        {% else %}
+          <a href="{{ breadcrumb.url }}">
+            {{ breadcrumb.name }}
+          </a>
+        {% endif %}
+      </span>
+    {% endfor %}
+  </div>
+</div>
+
+{{ schema_breadcrumb }}

@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  install:
+    - composer install
+  test:
+    - php vendor/bin/phpunit test
+  reset-database:
+    - rm database.db
+    - touch database.db

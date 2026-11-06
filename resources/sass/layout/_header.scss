@@ -1,0 +1,312 @@
+@charset "UTF-8";
+
+@use "../../feature/lookAndFeel/feel" as feel;
+@use "../../feature/lookAndFeel/style-guide" as style;
+
+body.look-and-feel-modern.padding-top {
+  padding-top: 66px;
+}
+
+:root {
+  --header-navbar-bg: url('/img/background.png') repeat;
+  --header-color: #3c3c3c;
+  --header-hover-color: #454545;
+  --header-active-bg: #e7e7e7;
+  --header-search-bg: #{$white};
+  --header-search-border: #ccc;
+}
+
+.navbar-dark {
+  --header-navbar-bg: #454545;
+  --header-color: #eee;
+  --header-hover-color: #{$primary};
+  --header-active-bg: #454545;
+  --header-group-link-color: #9d9d9d;
+  --header-search-bg: #{$gray-light};
+  --header-search-border: transparent;
+}
+
+@include media-breakpoint-down(lg) {
+  #mobile-menu {
+    padding-left: 36px;
+    box-sizing: content-box;
+    margin-right: -36px;
+    margin-left: -36px;
+    padding-right: 12px;
+
+    .navbar-nav {
+      padding: 16px 0;
+
+      .nav-item {
+        text-align: right;
+
+        .dropdown-container {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.navbar-toggler {
+  border: 0;
+  padding: $navbar-toggler-padding-y 0 $navbar-toggler-padding-y $navbar-toggler-padding-x;
+  outline: none !important;
+  width: 28px;
+  text-align: center;
+  box-sizing: content-box;
+
+  .button-close {
+    display: none;
+  }
+
+  &[aria-expanded="true"] {
+    .button-open {
+      display: none;
+    }
+
+    .button-close {
+      display: block;
+    }
+  }
+}
+
+@include feel.var(--neon-subscribe-color, style.$red-500, #ff4a00);
+
+.navbar {
+  .neon-subscribe-badge {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--neon-subscribe-color);
+    position: absolute;
+    font-size: 10px;
+    overflow: inherit;
+    text-overflow: inherit;
+    max-width: 100%;
+    color: #fff;
+    top: -9px;
+    right: -1px;
+  }
+}
+
+.neon-subscribe {
+}
+
+.neon-subscribe--active {
+  color: var(--neon-subscribe-color);
+}
+
+.navbar-nav {
+  .dropdown-container {
+    display: none;
+    padding-top: 5px;
+    position: absolute;
+    top: 100%;
+    z-index: 100;
+
+    .dropdown-menu {
+      display: block;
+      position: relative;
+
+      &:after, &:before {
+        bottom: calc(100% - 5px);
+      }
+    }
+  }
+
+  .dropdown:hover > .dropdown-container {
+    display: block;
+  }
+}
+
+// Glowne menu aplikacji. Po naprowadzeniu kursora myszy nad pozycja pokazujemy liste podmenu
+// ---------------------------------------------------------------------------------------
+
+%menu-link {
+  color: var(--header-color);
+  display: block;
+  text-decoration: none;
+  font-family: "Open Sans", Arial, sans-serif;
+  font-size: .81rem;
+
+  &:hover,
+  &:focus {
+    color: var(--header-hover-color);
+    background-color: var(--header-active-bg);
+  }
+}
+
+.nav-avatar {
+  margin-left: 20px;
+  display: flex;
+  align-items: center; // center image vertically
+
+  a,
+  .dropdown-item {
+    color: $gray;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    img, svg {
+      max-width: 100%;
+    }
+  }
+
+  .dropdown-toggle:after {
+    display: none;
+  }
+}
+
+// Notifications and private messages button
+// ------------------------------------------
+.nav-auth {
+  margin-left: auto; // align to the right
+  padding: 0; // no default padding
+  flex-direction: unset !important; // overwrite .navbar-nav setting to show link next to each other
+}
+
+.nav-auth > li {
+  position: relative;
+  align-items: center; // align icons in center
+  display: flex;
+
+  .nav-control-icon {
+    padding: 0 9px !important; // overwrite .navbar-nav setting
+    display: block;
+    position: relative;
+    outline: none;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .dropdown-modal {
+    // nim zaladuje sie JS - pretty scrollbar, lista powiadomien wyjezdza poza okno, dlatego
+    // dodalem overflow: hidden
+    overflow: hidden;
+  }
+
+  @include media-breakpoint-down(md) {
+    // na urzedzeniach mobilnych okno powiadomien oraz wiadomosci prywatnych musi byc rozciagniete na cala szerokosc
+    position: static;
+  }
+}
+
+.profile-name {
+  font-weight: bold !important;
+
+  &:hover {
+    background-color: transparent !important;
+  }
+}
+
+.mega-menu {
+  white-space: nowrap;
+  padding: 5px 10px;
+
+  .mega-menu-title {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #464646;
+    padding-bottom: 5px;
+
+    @include text-truncate;
+    max-width: 9vw;
+  }
+
+  .mega-menu-body {
+    display: table-cell;
+    padding: 10px;
+    border-right: 1px solid $card-border-color;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  li > a {
+    color: var(--header-group-link-color);
+    padding: 3px 0;
+    display: block;
+
+    &:hover {
+      text-decoration: none;
+      color: $primary;
+    }
+  }
+}
+
+// tymczasowy blok na "czarnej" skorki
+
+.navbar-dark {
+  .dropdown-menu:not(.dropdown-alerts) {
+    background-color: $dark;
+    border-radius: $border-radius-sm;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .2), inset 0 4px 10px rgba(0, 0, 0, 0.15);
+
+    .dropdown-item {
+      color: lighten($gray-light, 15%);
+
+      &:hover,
+      &:focus {
+        color: #cacaca;
+        background-color: #717171;
+      }
+    }
+  }
+
+  .dropdown-divider {
+    border-top-color: $gray-light;
+  }
+
+  .mega-menu {
+    .mega-menu-title {
+      color: $gray-lighter;
+      border-bottom: none;
+      font-weight: 400;
+    }
+
+    .mega-menu-body {
+      border-right-color: #575757;
+    }
+  }
+
+  input::placeholder {
+    color: inherit;
+  }
+
+  .nav-link {
+    font-family: Open Sans, Arial, sans-serif;
+    font-size: .81rem;
+  }
+}
+
+.navbar-toggle .icon-bar {
+  background-color: var(--header-color);
+}
+
+/* Za malo miejsca w pionie, by wyswietlac przyklejony navbar */
+@include media-breakpoint-down(md) {
+  /* zostawiamy navbar na gorze strony */
+  .fixed-top {
+    position: absolute;
+  }
+}
+
+.revive img {
+  margin: auto;
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+body > header {
+  background-color: inherit;
+
+  .navbar {
+    background-color: inherit;
+  }
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php">
+  <testsuites>
+    <testsuite name="Legacy">
+      <directory suffix="Test.php">./tests/Legacy/LaravelIntegration/</directory>
+      <directory suffix="Test.php">./tests/Legacy/Integration/</directory>
+      <directory suffix="Test.php">./tests/Legacy/Unit/</directory>
+    </testsuite>
+    <testsuite name="Campaigns">
+      <directory suffix="Test.php">./modules/campaigns/test/</directory>
+      <directory suffix="Test.php">./tests/Integration/Modules/Campaigns/</directory>
+    </testsuite>
+    <testsuite name="JobBoard">
+      <directory suffix="Test.php">./modules/jobBoard/test/</directory>
+      <directory suffix="Test.php">./tests/Integration/Modules/JobBoard/</directory>
+    </testsuite>
+    <testsuite name="Projections">
+      <directory suffix="Test.php">./tests/Integration/Projections/</directory>
+    </testsuite>
+    <testsuite name="Features">
+      <directory suffix="Test.php">./features/</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="APP_ENV" value="testing"/>
+  </php>
+</phpunit>

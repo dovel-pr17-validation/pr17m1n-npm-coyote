@@ -1,0 +1,12 @@
+{% extends 'adm.base' %}
+{% block title %}Aktywne sesje {{ parent() }}{% endblock %}
+
+{% block card %}
+    {{ grid(grid) }}
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    {% include 'adm.partials.geo-ip' %}
+{% endblock %}

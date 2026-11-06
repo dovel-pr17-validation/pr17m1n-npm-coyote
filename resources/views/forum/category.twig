@@ -1,0 +1,74 @@
+{% extends 'forum.base' %}
+{% block title %}{{ forum.title|default(forum.name) }} :: Forum {{ parent() }}{% endblock %}
+{% block description %}{{ excerpt(forum.description, 150) }}{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% import 'legacyComponents.forms' as forms %}
+{% from 'titleBanner.titleBanner' import titleBanner %}
+
+{% block content %}
+  <div class="row neon-legacy">
+    <div class="col-md-12">
+      <h1>{{ forum.title|default(forum.name) }}</h1>
+    </div>
+  </div>
+  <div class="neon-modern mb-3">
+    {{ titleBanner(title:forum.title|default(forum.name), crumbs:breadcrumbs) }}
+  </div>
+  <nav>
+    {{ topics.render()|raw }}
+  </nav>
+
+  {% include "forum.partials.top" %}
+
+  <main id="js-forum" class="mainbar">
+    <vue-section
+        v-for="(section, index) in sections"
+        :key="index"
+        :name="section.name"
+        :order="section.order"
+        :categories="section.categories"
+    ></vue-section>
+    {% include 'forum.partials.topics' %}
+    <section class="d-flex mt-3">
+      {% include 'forum.partials.per_page' with {label: 'Liczba wątków na stronę', perPage: topics.perPage()} %}
+    </section>
+    <vue-notifications></vue-notifications>
+  </main>
+  <script>
+    var forums = {{ forums|json_encode|raw }};
+    var topics = {{ topics|json_encode|raw }};
+    var postsPerPage = {{ postsPerPage }};
+    var flags = {{ flags|json_encode|raw }};
+    var groupStickyTopics = true;
+    var tags = {{ tags.user|json_encode|raw }};
+  </script>
+{% endblock %}
+
+{% block sidebar %}
+  {% embed 'forum.partials.sidebar' %}
+    {% block side_menu %}
+      {% include 'forum.partials.post_count' %}
+      <div class="box mb-5">
+        <h4 class="heading">
+          {{ icon('forumActions') }}
+          Akcje
+        </h4>
+        <ul id="js-sidebar" class="side-menu">
+          <li class="action-link">
+            <a @click="markTopics" title="Oznacz kategorie jako przeczytane">
+              {{ icon('forumCategoryMarkAsRead') }}
+              Oznacz jako przeczytane
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="mb-5 mt-5">
+        {{ globalViewers|raw }}
+      </div>
+      <div class="mb-5">
+        {{ localViewers|raw }}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

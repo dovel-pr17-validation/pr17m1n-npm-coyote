@@ -1,0 +1,103 @@
+{% extends 'layout' %}
+
+{% block title %}
+  {{ input_get('q') ? input_get('q') ~ ' :: ' }} Szukaj
+  {{ parent() }}
+{% endblock %}
+
+{% block container %}
+
+  <div class="row">
+    <div class="col-12">
+
+      {% if error %}
+        <div class="alert alert-danger">
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <div id="js-search" class="mb-3" v-cloak>
+        <ul class="nav nav-pills mb-3">
+          <li class="nav-item">
+            <a @click.prevent="setModel()" :href="modelUrl()" :class="{active: !model}" class="nav-link">Wszystkie</a>
+          </li>
+          <li v-for="(label, filterModel) in modelOptions" class="nav-item">
+            <a @click.prevent="setModel(filterModel)" :href="modelUrl(filterModel)" :class="{active: filterModel === model}" class="nav-link">${ label }</a>
+          </li>
+        </ul>
+
+        <p v-if="hits.meta.total" class="text-muted">
+          Wyniki 
+          <strong>${ hits.meta.from } - ${ hits.meta.to }</strong> 
+          z 
+          <strong>${ hits.meta.total }</strong> 
+          znalezione w czasie <strong>${hits.took} ms.</strong>
+        </p>
+
+        <ul class="list-inline">
+          <li v-if="shouldShowCategories" class="list-inline-item dropdown">
+            <a class="btn btn-secondary dropdown-toggle text-muted" data-bs-toggle="dropdown" href="#">
+              <span>${ selectedCategories || 'Wszystkie kategorie' }</span>
+            </a>
+
+            <div class="dropdown-menu">
+              <perfect-scrollbar id="wrap">
+                <a v-for="forum in forums" @click="toggleCategory(forum.id)" :key="forum.id" class="dropdown-item" href="javascript:" rel="nofollow">
+                  <i v-if="categories.indexOf(forum.id) > -1" class="fa-light fa-check"></i>
+                  <span :class="{'ps-2': forum.indent}">${ forum.name }</span>
+                </a>
+              </perfect-scrollbar>
+            </div>
+          </li>
+
+          <li class="list-inline-item dropdown">
+            <a class="btn btn-secondary dropdown-toggle text-muted" data-bs-toggle="dropdown" href="#">
+              ${ sortOptions[defaultSort] }
+            </a>
+
+            <div class="dropdown-menu">
+              <a v-for="(label, option) in sortOptions" @click.prevent="setSort(option)" class="dropdown-item" :href="sortUrl(option)">
+                <i v-if="option === defaultSort" class="fa-light fa-check"></i>
+
+                ${ label }
+              </a>
+            </div>
+          </li>
+
+          <li class="list-inline-item">
+            <vue-autocomplete v-model="user" placeholder="Autor" @select="setUser"></vue-autocomplete>
+          </li>
+        </ul>
+
+        <component v-if="hits.meta.total" :is="getComponent()" :hits="hits.data"></component>
+        <div v-else class="card card-body bg-light p-2 mt-4">
+          <p class="text-center lead mt-4">
+            Nie znaleźliśmy stron, które spełniają Twoje kryteria wyszukiwania.<br>
+            <a href="{{ route('home') }}"><u>Wejdź na naszą stronę główną</u></a>, a być może znajdziesz coś dla siebie!
+          </p>
+        </div>
+
+        <vue-pagination :current-page="hits.meta.current_page" :total-pages="Math.min(pageLimit, hits.meta.last_page)" @change="setPage"></vue-pagination>
+        <vue-notifications></vue-notifications>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block head %}
+  {{ parent() }}
+
+  <script type="text/javascript">
+    var model = '{{ model }}';
+    var query = '{{ query|raw }}';
+    var sort = '{{ sort|raw }}';
+    var user = '{{ user }}';
+    var page = {{ page }};
+    var hits = {{ hits|default('null')|raw }};
+    var postsPerPage = {{ posts_per_page }};
+    var pageLimit = {{ page_limit }};
+    var categories = {{ categories|default([])|json_encode|raw }};
+    var forums = {{ forums|json_encode|raw }};
+  </script>
+{% endblock %}
+

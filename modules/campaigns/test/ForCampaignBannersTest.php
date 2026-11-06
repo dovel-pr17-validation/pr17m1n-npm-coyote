@@ -1,0 +1,199 @@
+<?php
+namespace Test\Modules\Campaigns;
+
+use Modules\Campaigns\CampaignBannersFacade;
+use Modules\Campaigns\CampaignService;
+use Modules\Campaigns\DeviceType;
+use Modules\Campaigns\ForCampaignBanners;
+use Modules\Campaigns\Internal\CampaignBanner;
+use Modules\Campaigns\Internal\CampaignBanners;
+use Modules\Campaigns\VariantType;
+use PHPUnit\Framework\Attributes\Before;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Test\Modules\Campaigns\Fixture\TestRedirectUrls;
+
+#[CoversClass(ForCampaignBanners::class)]
+#[CoversClass(CampaignBannersFacade::class)]
+class ForCampaignBannersTest extends TestCase {
+    private ForCampaignBanners $presenter;
+    private CampaignService|MockObject $campaignService;
+
+    #[Before]
+    public function initialize(): void {
+        $this->campaignService = $this->createStub(CampaignService::class);
+        $this->presenter = new CampaignBannersFacade(
+            $this->campaignService,
+            new TestRedirectUrls("https://test-redirect"));
+    }
+
+    #[Test]
+    public function noHorizontalBanners(): void {
+        // arrange
+        $this->stubCampaignBannersEmpty();
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertEmpty($bannerSet->horizontal);
+    }
+
+    #[Test]
+    public function noSidebarBanner(): void {
+        // arrange
+        $this->stubCampaignBannersEmpty();
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertNull($bannerSet->sidebar);
+    }
+
+    #[Test]
+    public function horizontalBannerImageUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            [$this->banner('img.png', variantId:1)],
+            null,
+            []));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('img.png', $bannerSet->horizontal[0]->imageUrl);
+    }
+
+    #[Test]
+    public function horizontalBannerRedirectUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            [$this->banner('img.png', variantId:42)],
+            null, []));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('https://test-redirect/42', $bannerSet->horizontal[0]->redirectUrl);
+    }
+
+    #[Test]
+    public function multipleHorizontalBanners(): void {
+        // arrange
+        $campaignBanners = new CampaignBanners(
+            [$this->banner('one.png', variantId:1), $this->banner('two.png', variantId:2)],
+            null, []);
+        $this->stubCampaignBanners($campaignBanners);
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertCount(2, $bannerSet->horizontal);
+    }
+
+    #[Test]
+    public function noFeedBanners(): void {
+        // arrange
+        $this->stubCampaignBannersEmpty();
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertEmpty($bannerSet->feed);
+    }
+
+    #[Test]
+    public function feedBannerImageUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            horizontal:[],
+            sidebar:null,
+            feed:[$this->banner('feed.png', variantId:5)]));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('feed.png', $bannerSet->feed[0]->imageUrl);
+    }
+
+    #[Test]
+    public function feedBannerRedirectUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            horizontal:[],
+            sidebar:null,
+            feed:[$this->banner('feed.png', variantId:9)]));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('https://test-redirect/9', $bannerSet->feed[0]->redirectUrl);
+    }
+
+    #[Test]
+    public function sidebarBannerImageUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            [],
+            $this->banner('side.png', variantId:7, type:VariantType::Rectangle), []));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('side.png', $bannerSet->sidebar->imageUrl);
+    }
+
+    #[Test]
+    public function sidebarBannerRedirectUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            [],
+            $this->banner('side.png', variantId:7, type:VariantType::Rectangle),
+            []));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('https://test-redirect/7', $bannerSet->sidebar->redirectUrl);
+    }
+
+    #[Test]
+    public function sidebarBannerExposeUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            [],
+            $this->banner('side.png', variantId:7, type:VariantType::Rectangle), []));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('https://test-redirect/7/expose', $bannerSet->sidebar->exposeUrl);
+    }
+
+    #[Test]
+    public function sidebarBannerAdblockUrl(): void {
+        // arrange
+        $this->stubCampaignBanners(new CampaignBanners(
+            [],
+            $this->banner('side.png', variantId:7, type:VariantType::Rectangle), []));
+        // act
+        $bannerSet = $this->bannerSet();
+        // assert
+        $this->assertSame('https://test-redirect/7/adblock', $bannerSet->sidebar->adblockUrl);
+    }
+
+    private function banner(
+        string       $bannerUrl,
+        int          $variantId,
+        ?VariantType $type = null,
+    ): CampaignBanner {
+        return new CampaignBanner(
+            $bannerUrl,
+            'irrelevant',
+            $type ?? VariantType::Banner,
+            $variantId,
+        );
+    }
+
+    private function stubCampaignBannersEmpty(): void {
+        $this->stubCampaignBanners(new CampaignBanners([], null, []));
+    }
+
+    private function stubCampaignBanners(CampaignBanners $campaignBanners): void {
+        $this->campaignService->method('campaignBanners')->willReturn($campaignBanners);
+    }
+
+    private function bannerSet(): \Modules\Campaigns\CampaignBannerSet {
+        return $this->presenter->bannerSet(DeviceType::Desktop);
+    }
+}

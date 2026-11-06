@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+.stream {
+  .media {
+    &:not(:first-child) {
+      margin-top: .75rem;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $card-border-color;
+    }
+
+    p {
+      margin-bottom: 2px;
+      font-size: $font-size-sm;
+    }
+
+    .media-body {
+      padding-bottom: .75rem;
+    }
+  }
+}

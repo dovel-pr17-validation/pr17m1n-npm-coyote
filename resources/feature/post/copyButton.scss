@@ -1,0 +1,41 @@
+@use "../../feature/theme/theme" as theme;
+@use "../../feature/lookAndFeel/style-guide" as style;
+
+.markdown-code {
+  position: relative;
+
+  .copy-button {
+    display:       none;
+    position:      absolute;
+    padding:       2px 8px;
+    border-radius: 8px;
+    border:        1px solid currentColor;
+    right:         12px;
+    top:           12px;
+    z-index:       1;
+    cursor:        pointer;
+    font-size:     0.8em;
+
+    @include theme.light {
+      color:            #838383;
+      background-color: style.$navy-025; // background of code block
+      &:hover {
+        background-color: lighten(#f5f2f0, 2%);
+      }
+    }
+
+    @include theme.dark {
+      border:           1px solid #838383;
+      background-color: style.$neutral-900; // background of code block
+      &:hover {
+        background-color: #1a1a1a;
+      }
+    }
+  }
+
+  &:hover {
+    .copy-button {
+      display: block;
+    }
+  }
+}

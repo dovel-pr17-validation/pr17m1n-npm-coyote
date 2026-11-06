@@ -1,0 +1,60 @@
+@use "../../../feature/theme/theme" as theme;
+
+.post-comments {
+  margin:    15px 0 5px;
+  font-size: .75rem;
+
+  @include media-breakpoint-up(sm) {
+    padding-right: 50px;
+  }
+
+  .badge {
+    font-weight: 400;
+    padding:     1px 5px;
+    margin-top:  -1px;
+    font-size:   100%;
+  }
+}
+
+.comment-delete-border {
+  opacity:       0.7;
+  @include theme.property(border, 1px solid #f4dfbb, 1px solid #5f3e26);
+  border-radius: 8px;
+  .comment-delete {
+    border-radius: 7px;
+  }
+}
+
+.comment-delete-border--expanded {
+  .comment-delete {
+    border-bottom-left-radius:  0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.post-comment {
+  @include theme.property(border-top, 1px solid #ddd, 1px solid #2f2f2f);
+  padding:   5px 0 5px 0;
+  word-wrap: break-word;
+
+  .btn-comment {
+    padding: 0 5px;
+    color:   $gray;
+    display: none;
+  }
+
+  &:hover {
+    .btn-comment {
+      display: inline-block;
+    }
+  }
+
+  span > a {
+    text-decoration: underline;
+  }
+
+  &.not-read {
+    @include not-read-border;
+    padding-left: 4px;
+  }
+}

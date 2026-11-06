@@ -1,0 +1,147 @@
+.job-search-form {
+  display: flex;
+  flex-flow: row nowrap;
+  padding: 10px;
+
+  > .input-item {
+    position: relative;
+    margin-left: 15px;
+    padding-right: 15px;
+    display: flex;
+
+    &.keyword-search {
+      margin-left: 0;
+    }
+
+    &.keyword-search,
+    &.location-search {
+      flex-basis: 35%;
+    }
+
+    &.salary-search {
+      flex-basis: 20%;
+    }
+
+    &.button-search {
+      flex-basis: 10%;
+      padding-right: 0;
+    }
+
+    &.extended {
+      @include media-breakpoint-up(md) {
+        //flex-basis: 50%;
+        //transition: all 300ms cubic-bezier(.25, .46, .45, .94);
+        //transition-delay: .1s;
+
+        &:after,
+        &:before {
+          bottom: -11px;
+          left: 11px;
+          border: solid transparent;
+          content: " ";
+          height: 0;
+          width: 0;
+          position: absolute;
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        &:after {
+          border-color: rgba(245, 245, 245, 0);
+          border-bottom-color: #f5f5f5;
+          border-width: 6px;
+          margin-left: -6px;
+        }
+
+        &:before {
+          border-color: rgba(221, 221, 221, 0);
+          border-bottom-color: #ddd;
+          border-width: 7px;
+          margin-left: -7px;
+        }
+      }
+    }
+  }
+
+  .fa-icon {
+    font-size: 16px;
+    color: lighten($gray-light, 10%);
+    padding-top: 7px;
+    flex: 0 0 auto;
+  }
+
+  .fa-angle-down, .fa-angle-up {
+    right: 5px;
+  }
+
+  button[type=submit] {
+    width: 100%;
+  }
+
+  select[name=currency] {
+    width: 100px;
+  }
+
+  .form-control {
+    border: none;
+    box-shadow: none;
+    flex: 1 1 auto;
+  }
+
+  @include media-breakpoint-up(sm) {
+    > .input-item {
+      &.keyword-search,
+      &.location-search {
+        border-right: 1px solid $card-border-color;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(md) {
+    flex-flow: column nowrap;
+
+    > .input-item {
+      margin-left: 0;
+    }
+  }
+}
+
+.job-filter-form {
+  .btn-salary {
+    border: 1px solid $card-border-color;
+    background: #f5f5f5;
+    text-align: center;
+    display: block;
+  }
+
+  @include media-breakpoint-up(sm) {
+    .form-group-salary {
+      float: right;
+    }
+  }
+
+  @include media-breakpoint-down(md) {
+    .filters {
+      position: relative;
+    }
+
+    .list-group-tech {
+      white-space: nowrap;
+    }
+  }
+
+  // hide scrollbar due to bug
+  // @see https://github.com/mdbootstrap/perfect-scrollbar/issues/947
+  .ps__rail-x {
+    display: none !important;
+  }
+}
+
+@keyframes wiggle {
+  0% { transform: rotate(0deg); }
+  80% { transform: rotate(0deg); }
+  85% { transform: rotate(5deg); }
+  95% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+

@@ -1,0 +1,60 @@
+@use "../../theme/theme";
+@use "../../lookAndFeel/style-guide" as style;
+@use "../../lookAndFeel/lookAndFeel";
+@use "../banners";
+
+@function urlEncodedColor($color) {
+  @return '%23' + unquote(str-slice(ie-hex-str($color), 4));
+}
+
+@function gradient($from, $to, $direction) {
+  @if $direction == 'right' {
+    @return linear-gradient(45deg, $from, $from, $to);
+  } @else {
+    @return linear-gradient(90deg, $to, $from, $from);
+  }
+}
+
+@mixin highlightedText {
+  @include theme.color(#005b12, #bdd5c3);
+}
+
+.title-banner {
+  @include theme.property(background-image,
+    gradient(lookAndFeel.$modern-tile-background-light, #bbe7ca, 'right'),
+    gradient(lookAndFeel.$modern-tile-background-dark, #0d5c28, 'right'));
+
+  &--gradient-left {
+    @include theme.property(background-image,
+      gradient(lookAndFeel.$modern-tile-background-light, #bbe7ca, 'left'),
+      gradient(lookAndFeel.$modern-tile-background-dark, #0d5c28, 'left'));
+  }
+
+  &__subtitle {
+    @include banners.bannerTextTopLight;
+    @include highlightedText;
+  }
+
+  &__title {
+    word-wrap: break-word;
+    @include banners.bannerTextBottomHeavy;
+  }
+
+  &__crumbs {
+    list-style:   none;
+    padding-left: 0;
+    margin:       0;
+  }
+
+  &__crumbs-item {
+    display: inline;
+    @include banners.bannerTextTopLight;
+  }
+
+  &__crumbs-separator {
+    display: inline;
+    content: "»";
+    margin:  0 6px 0 8px;
+    @include highlightedText;
+  }
+}

@@ -1,0 +1,43 @@
+{% extends 'adm.base' %}
+{% block title %}Dziennik zdarzeń {{ parent() }}{% endblock %}
+
+{% block container %}
+  {% if paginator.items() > 0 %}
+    <div class="card mt-3">
+      <div class="card-body">
+        {{ form_start(form) }}
+        {{ form_row(form.text) }}
+        {{ form_row(form.ip) }}
+        {{ form_row(form.browser) }}
+        {{ form_row(form.fingerprint) }}
+        {{ form_row(form.actor_displayName) }}
+        {{ form_row(form.submit) }}
+        {{ form_end() }}
+
+        <div class="justify-content-center d-flex mt-3 mb-3">{{ paginator.render()|raw }}</div>
+
+        <div class="stream">
+          {% for activity in paginator %}
+            {% include 'legacyComponents.stream' %}
+          {% else %}
+            <span>Brak rekordów spełniających Twoje kryteria.</span>
+          {% endfor %}
+        </div>
+
+        <div class="mt-3 mb-3 d-flex justify-content-center">{{ paginator.render()|raw }}</div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block body %}
+  {{ parent() }}
+
+  <script>
+    $(function () {
+      $(document).on('click mousedown', '#stream-filter-form .dropdown-menu', function (e) {
+        e.stopPropagation();
+      });
+    });
+  </script>
+{% endblock %}

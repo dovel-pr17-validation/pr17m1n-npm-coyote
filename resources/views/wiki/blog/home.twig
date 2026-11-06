@@ -1,0 +1,53 @@
+{% extends 'wiki.page' %}
+
+{% block container %}
+  <div class="row">
+    <div id="blog" class="col-sm-9">
+      <div class="card">
+        <div class="card-body">
+          {{ include('wiki.partials.dropdown') }}
+
+          {% for child in children %}
+            <div class="media">
+              <div class="media-body">
+                <h4 class="media-heading">
+                  <a href="{{ url(child.path) }}">
+                    {{ child.title }}
+                  </a>
+                </h4>
+                <ul class="metadata list-inline">
+                  <li class="list-inline-item" title="Data opublikowania" class="date">
+                    {{ child.created_at }}
+                  </li>
+                  <li class=" list-inline-item comment">
+                    <a href="{{ url(child.path) }}#box-comment" title="Zobacz komentarze" value="UserComments:{{ child.comments }}">
+                      {{ declination(child.comments|length, ['komentarz', 'komentarze', 'komentarzy']) }}
+                    </a>
+                  </li>
+                  <li class="list-inline-item counter" value="UserPageVisits:{{ child.views }}">
+                    {{ declination(child.views, ['odsłona', 'odsłony', 'odsłon']) }}
+                  </li>
+                </ul>
+                <div class="blog-text">
+                  {{ child.text|raw }}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+          <nav class="text-center">
+            {{ children|raw }}
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <aside id="blog-sidebar" class="col-sm-3">
+      <h4>Blog 4programmers.net</h4>
+
+      <a href="{{ url('Kontakt') }}" class="btn btn-primary">Kontakt z nami</a>
+
+      {{ render_block('blog_sidebar') }}
+    </aside>
+  </div>
+{% endblock %}

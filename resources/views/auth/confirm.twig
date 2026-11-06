@@ -1,0 +1,24 @@
+{% extends 'layout' %}
+{% block title %}Potwierdzenie adresu e-mail{{ parent() }}{% endblock %}
+
+{% import 'legacyComponents.forms' as forms %}
+
+{% block container %}
+    <div class="card">
+        <div class="card-header">
+            Potwierdź adres e-mail, aby otrzymywać powiadomienia
+        </div>
+        <div class="card-body">
+            {{ form_open({'method': 'POST', 'role': 'form', 'url': url('Confirm')}) }}
+            {{ form_hidden('token', token) }}
+            {{ forms.text('email', 'E-mail', input_old('email', user('email'))) }}
+
+            {% if session_has('users') %}
+                {{ forms.select('name', 'Nazwa użytkownika', session_get('users')) }}
+            {% endif %}
+
+            {{ forms.submit('Wyślij e-mail z linkiem aktywacyjnym', 'Wysyłanie...') }}
+            {{ form_close() }}
+        </div>
+    </div>
+{% endblock %}

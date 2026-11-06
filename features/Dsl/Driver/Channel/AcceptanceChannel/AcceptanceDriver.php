@@ -1,0 +1,216 @@
+<?php
+namespace Features\Dsl\Driver\Channel\AcceptanceChannel;
+
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverElement;
+use Features\Dsl\Driver\Driver;
+use Laravel\Dusk;
+use Libs\Arrays\arrays;
+
+readonly class AcceptanceDriver implements Driver {
+    private BrowserDriver $driver;
+    private HarnessClient $harness;
+    private VariantImageFixture $variantImages;
+    private CampaignIdMapping $campaignIds;
+    private JobOfferIdMapping $jobOfferIds;
+    private VariantAliasMapping $variantAliases;
+    private RotationSeed $rotationSeed;
+    private ScreenshotSequence $screenshots;
+
+    public function __construct(
+        \DateTimeImmutable $testStartDate,
+        Dusk\Browser       $browser,
+    ) {
+        $this->driver = new BrowserDriver($browser);
+        $this->harness = new HarnessClient('http://nginx');
+        $this->variantImages = new VariantImageFixture();
+        $this->campaignIds = new CampaignIdMapping();
+        $this->jobOfferIds = new JobOfferIdMapping();
+        $this->variantAliases = new VariantAliasMapping();
+        $this->rotationSeed = new RotationSeed();
+        $this->screenshots = new ScreenshotSequence(
+            __DIR__ . '/../../../../../storage/screenshots',
+            $testStartDate);
+    }
+
+    public function initialize(string $feature, string $scenario): void {
+        $this->driver->resizeViewport(1200, 1080);
+        $this->screenshots->startScenario($feature, $scenario);
+        $this->logIntoAdminPanel('admin-lowrep', 'admin-lowrep');
+        $this->harness->resetCampaigns();
+        $this->harness->resetJobOffers();
+    }
+
+    public function finalize(): void {
+        $this->driver->clearState();
+    }
+
+    public function createCampaign(string $campaign, bool $premium): void {
+        $this->driver->navigate('/Adm/Campaigns/Save');
+        $this->driver->browser()->type('name', $campaign);
+        $this->driver->browser()->type('redirect_url', 'https://example.test');
+        $this->driver->browser()->type('target_views', '999');
+        if ($premium) {
+            $this->driver->browser()->check('is_premium');
+        }
+        $this->driver->submit('Zapisz');
+        $this->campaignIds->setCampaignId($campaign, $this->currentCampaignId());
+        $this->screenshot('createCampaign');
+    }
+
+    public function addVariant(string $campaign, string $variantType, string $variantUrl): void {
+        $campaignId = $this->campaignIds->getCampaignId($campaign);
+        $imagePath = $this->variantImages->create($variantType);
+        try {
+            $this->driver->navigate("/Adm/Campaigns/Show/$campaignId");
+            $this->driver->browser()->attach('images[]', $imagePath);
+            $this->driver->submit('Prześlij');
+            $this->variantAliases->setVariantAlias($this->lastUploadedVariantImageUrl(), $variantUrl);
+            $this->screenshot('addVariant');
+        } finally {
+            $this->variantImages->remove($imagePath);
+        }
+    }
+
+    public function resolveVariantsForUser(string $deviceType): void {
+        $this->driver->resizeViewport(...$this->viewportSize($deviceType));
+        $this->harness->pinRotationSeed($this->rotationSeed->current());
+        $this->rotationSeed->increment();
+        $this->resolveAllSlotsForCurrentDevice();
+        $this->screenshot('resolveVariantsForUser');
+    }
+
+    private function viewportSize(string $deviceType): array {
+        return match ($deviceType) {
+            'desktop' => [1920, 1080],
+            'mobile'  => [390, 844],
+            default   => throw new \Exception("Invalid device type: $deviceType"),
+        };
+    }
+
+    public function variantsForSlot(string $slotType): array {
+        return match ($slotType) {
+            'header' => $this->aliasedImageUrls('.campaign-banner-header img'),
+            'square' => $this->aliasedImageUrls('.campaign-banner-square img'),
+            'feed'   => $this->aliasedImageUrls('.campaign-banner-feed img'),
+            default  => throw new \Exception("Invalid slot type: $slotType"),
+        };
+    }
+
+    /**
+     * @return string[]
+     */
+    private function aliasedImageUrls(string $selector): array {
+        return $this->imageUrls($selector) |> arrays::map($this->variantAliases->getVariantAlias(...));
+    }
+
+    private function logIntoAdminPanel(string $username, string $password): void {
+        $this->driver->navigate('/Login');
+        $this->closeGdprIfVisible();
+        $this->driver->browser()->type('name', $username);
+        $this->driver->browser()->type('password', $password);
+        $this->driver->submit('Zaloguj się');
+        $this->driver->navigate('/Adm');
+        $this->driver->browser()->type('password', $password);
+        $this->driver->submit('Logowanie');
+    }
+
+    private function currentCampaignId(): int {
+        \preg_match('#/Campaigns/Show/(\d+)#', $this->driver->browser()->driver->getCurrentURL(), $matches);
+        return (int)$matches[1];
+    }
+
+    /**
+     * @return string[]
+     */
+    private function imageUrls(string $selector): array {
+        return $this->driver->browser()->elements($selector)
+                |> arrays::filter(fn($element) => $element->isDisplayed())
+                |> arrays::map(fn($element) => $element->getAttribute('src'));
+    }
+
+    private function closeGdprIfVisible(): void {
+        $gdprButton = $this->driver->browser()->element('#gdpr-all');
+        if ($gdprButton?->isDisplayed()) {
+            $this->driver->browser()->click('#gdpr-all');
+            $this->driver->browser()->waitUntilMissing('.gdpr-modal');
+        }
+    }
+
+    private function lastUploadedVariantImageUrl(): string {
+        // The campaign's admin page lists variants in creation order.
+        $urls = $this->imageUrls('img[alt="Grafika"]');
+        return \end($urls);
+    }
+
+    private function resolveAllSlotsForCurrentDevice(): void {
+        $this->visitTopic();
+    }
+
+    private function visitTopic(): void {
+        $this->driver->navigate('/Forum/Algorytmy/8-algorithms_every_developer_should_know');
+        $this->driver->browser()->waitUntilMissing('#js-skeleton');
+    }
+
+    public function captureDiagnostics(string $testTitle): void {
+        $this->screenshot($testTitle);
+    }
+
+    private function screenshot(string $label): void {
+        $this->driver->screenshot($this->screenshots->nextPath($label));
+    }
+
+    public function createJobOffer(string $jobOffer): void {
+        $this->jobOfferIds->setJobOfferId($jobOffer, $this->harness->createJobOffer($jobOffer));
+    }
+
+    public function clickJobOffer(string $jobOffer): void {
+        // With fewer than 3 job offers, the tiles are only shown on mobile.
+        $this->driver->resizeViewport(...$this->viewportSize('mobile'));
+        $this->visitTopic();
+        $tile = $this->jobOfferTile($jobOffer);
+        $this->screenshot('clickJobOffer');
+        $this->driver->browser()->waitForReload(fn() => $tile->click());
+    }
+
+    public function jobOfferClicks(string $jobOffer): int {
+        return $this->harness->jobOfferClicks($this->jobOfferIds->getJobOfferId($jobOffer));
+    }
+
+    private function jobOfferTile(string $jobOffer): WebDriverElement {
+        // Job offer tiles are rendered between posts, in the shadow DOM of <vue-shadow-root>,
+        // which is attached only once the custom element is defined.
+        foreach ($this->driver->browser()->elements('vue-shadow-root') as $shadowHost) {
+            $tiles = $shadowHost->getShadowRoot()->findElements(WebDriverBy::cssSelector('a'));
+            foreach ($tiles as $tile) {
+                if ($tile->isDisplayed() && \str_contains($tile->getText(), $jobOffer)) {
+                    return $tile;
+                }
+            }
+        }
+        throw new \Exception();
+    }
+
+    public function readJobOfferExposures(string $jobOffer): int {
+        return $this->harness->jobOfferExposures($this->jobOfferIds->getJobOfferId($jobOffer));
+    }
+
+    public function renderJobOfferTile(string $jobOffer): void {
+        $this->driver->navigate('/harness?view=forum-job-offers');
+        $this->waitForJobOfferTileExposure($jobOffer, 'not-exposed');
+        $this->screenshot('renderJobOfferTile');
+    }
+
+    public function scrollToJobOfferTile(string $jobOffer): void {
+        $this->driver->scrollToBottom();
+        $this->waitForJobOfferTileExposure($jobOffer, 'exposed');
+        $this->screenshot('scrollToJobOfferTile');
+    }
+
+    private function waitForJobOfferTileExposure(string $jobOffer, string $exposureStatus): void {
+        // The harness reflects the tile's exposure on the element wrapping it,
+        // once the exposure is observed and, if exposed, recorded.
+        $this->driver->browser()
+            ->waitFor("[data-forum-job-offer-tile='$jobOffer'][data-exposure='$exposureStatus']");
+    }
+}

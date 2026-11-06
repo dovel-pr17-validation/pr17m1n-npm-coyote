@@ -1,0 +1,15 @@
+.badge {
+  color: #fff;
+
+  > a {
+    color: inherit !important;
+  }
+}
+
+.badge-secondary {
+  background-color: $gray-light;
+}
+
+.label-new {
+  background-color: #FF4A00;
+}

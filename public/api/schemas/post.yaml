@@ -1,0 +1,57 @@
+type: object
+properties:
+  id:
+    type: integer
+  user_name:
+    type: string
+    nullable: true
+    description: "Name of anonymous user"
+  score:
+    type: number
+    format: float
+  edit_count:
+    type: integer
+    default: 0
+  forum_id:
+    type: integer
+  topic_id:
+    type: integer
+  created_at:
+    type: string
+    format: "datetime"
+  text:
+    type: string
+    description: "Raw version of post"
+  excerpt:
+    type: string
+    description: "Short version of plain post"
+  html:
+    type: string
+    description: "HTML version of post"
+  url:
+    type: string
+  user:
+    nullable: true
+    $ref: './user.yaml'
+  comments:
+    type: array
+    nullable: true
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+          description: "Text version of comment"
+        html:
+          type: string
+          description: "HTML version of comment"
+        created_at:
+          type: string
+          format: "datetime"
+        updated_at:
+          type: string
+          format: "datetime"
+        user:
+          $ref: './user.yaml'

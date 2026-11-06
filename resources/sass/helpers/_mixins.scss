@@ -1,0 +1,24 @@
+@mixin list-inline($name, $spacing) {
+  .#{$name} {
+    .list-inline-item:not(:last-child) {
+      margin-right: $spacing;
+
+      &:after {
+        content: "\2022";
+        margin-left: $spacing + .1rem;
+      }
+    }
+  }
+}
+
+@mixin not-read-border {
+  border-left: 2px solid $alt-link-hover-color;
+}
+
+@mixin not-read-bullet {
+  width: 12px;
+  height: 12px;
+  background-color: var(--neon-subscribe-color);
+  border-radius: 50%;
+  border: 2px solid #fff;
+}

@@ -1,0 +1,64 @@
+@import "helpers/variables";
+@import "helpers/mixins";
+
+$grid-breakpoints: (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1400px);
+
+@mixin media-breakpoint-up($size) {
+  @media (min-width: map-get($grid-breakpoints, $size)) {
+    @content;
+  }
+}
+@mixin media-breakpoint-down($name, $breakpoints: $grid-breakpoints) {
+  $max: breakpoint-max($name, $breakpoints);
+  @if $max {
+    @media (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+@function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
+  $max: map-get($breakpoints, $name);
+  @return if($max and $max > 0, $max - .02, null);
+}
+
+$alert-warning-color: #714907;
+$alert-warning-background: #f7e8cf;
+$alert-warning-border: #f4dfbb;
+$alert-danger-color: #712b29;
+$alert-danger-background: #f7dddc;
+$alert-danger-border: #f4cfce;
+
+@import "core/logos";
+@import "core/ajax";
+@import "core/job-offers";
+@import "core/thumbnail";
+
+@import "components/forms/markdown";
+@import "components/forms/emoji-picker";
+@import "components/forms/help";
+@import "components/vcard";
+@import "components/modals";
+@import "components/searchbar";
+@import "components/thumbnail";
+@import "components/avatar";
+@import "components/notifications";
+@import "components/forms/auto-complete";
+@import "components/microblog/microblog";
+@import "components/microblog/comment";
+@import "components/forum/section";
+@import "components/forum/topic";
+@import "components/forum/comment";
+@import "components/forum/poll";
+@import "components/job/job";
+@import "components/job/pricing";
+@import "components/job/location";
+@import "components/comment";
+@import "components/guide/guide";
+@import "components/gdpr";
+@import "components/heading";
+@import "components/popovers";
+
+@import "perfect-scrollbar/css/perfect-scrollbar";
+@import "balloon-css/src/balloon";

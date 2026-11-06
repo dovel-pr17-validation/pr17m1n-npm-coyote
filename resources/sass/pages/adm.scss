@@ -1,0 +1,96 @@
+@charset "UTF-8";
+
+@import "../helpers/variables";
+
+body.padding-top {
+  padding-top: 0;
+}
+
+abbr {
+  cursor: help;
+  border-bottom: 1px dotted $gray-light;
+}
+
+@import "adm/sidebar";
+@import "adm/table";
+
+body.theme-dark {
+  --bs-body-color: #acacac;
+
+  .post-preview {
+    background-color: #111111;
+    border-color: #333333;
+  }
+
+  .input-group {
+    input.form-control {
+      border-color: #2f2f2f;
+      background-color: #101010;
+    }
+  }
+
+  #box-user {
+    border-bottom: 1px solid #444;
+  }
+
+  aside#adm-menu {
+    border-right: 1px solid #444;
+
+    ul li.divider {
+      border-bottom: 1px solid #444;
+    }
+  }
+}
+
+.post-preview {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: .5em;
+  border-radius: .25em;
+}
+
+.post-preview p {
+  margin: 0;
+}
+
+img.img-smile {
+  height: 1em;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+.administrator-panel aside#adm-menu ul li.divider {
+  border-bottom: 1px solid #ddd;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  padding-left: 20px;
+  font-size: 0.85em;
+
+  &.menu-group-service-operations:after {
+    content: 'Ustawienia serwisu';
+  }
+
+  &.menu-group-moderator-actions:after {
+    content: 'Akcje moderatorskie';
+  }
+}
+
+.badge.badge-material-element {
+  background-color: #c8bba4;
+
+  body.theme-dark & {
+    color: #c0bbb6;
+    background-color: #3b2c12;
+  }
+}
+
+.fake-anchor {
+  color: #80a41a;
+  text-decoration: underline;
+
+  &.fake-mention {
+    font-weight: bold;
+  }
+}

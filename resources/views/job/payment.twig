@@ -1,0 +1,250 @@
+{% extends 'job.base' %}
+
+{% block title %}Płatność{{ parent() }}{% endblock %}
+
+{% block container %}
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <div id="js-payment" class="row" v-cloak>
+    <form @submit.prevent="makePayment" class="col-md-9">
+      <div v-if="hasPaymentError" class="alert alert-danger alert-report">
+        <p class="mb-3">
+          {{ icon('alertDanger') }}
+          <b class="ms-1">
+            Wystąpił nieoczekiwany błąd podczas przetwarzania płatności.
+          </b>
+        </p>
+        <p class="mb-0">
+          Spróbuj innej metody płatności bądź skontaktuj się z administracją serwisu.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          {{ icon('paymentSecureConnection') }}
+          Płatność poprzez bezpieczne połączenie
+        </div>
+
+        <div class="card-body" id="payment-methods" v-show="grossPrice > 0">
+          <ul class="nav nav-pills mb-3">
+            <li class="nav-item">
+              <span @click="setPaymentMethod('card')" :class="{'active': form.payment_method === 'card'}"  class="nav-link" rel="nofollow">
+                <strong class="d-block mb-1">
+                  Karta kredytowa/debetowa
+                </strong>
+              </span>
+            </li>
+            <li class="nav-item">
+              <span @click="setPaymentMethod('p24')" :class="{'active': form.payment_method === 'p24'}"  class="nav-link" rel="nofollow">
+                <strong class="d-block mb-1">
+                  BLIK lub przelew
+                </strong>
+              </span>
+            </li>
+          </ul>
+
+          <div v-show="form.payment_method === 'card'" class="card">
+            <div class="card-body">
+              <div id="card-form">
+                <div id="card-element">
+                  <!-- Elements will create input elements here -->
+                </div>
+                <!-- We'll put the error messages in this element -->
+                <div id="card-errors" role="alert"></div>
+              </div>
+            </div>
+          </div>
+          <div v-show="form.payment_method === 'p24'">
+            Po kliknięciu "Zapłać i zapisz", zostaniesz przekierowany do formularza płatności online.
+          </div>
+        </div>
+
+        <div class="card-body" v-show="!grossPrice">
+          <h1 class="text-center">
+            <span class="text-primary">
+              {{ icon('paymentNotNecessary') }}
+            </span>
+            Płatność nie jest wymagana
+          </h1>
+          <div class="d-flex justify-content-center mt-3">
+            <vue-button submit :disabled="isProcessing" class="btn btn-primary btn-lg">
+              Zapisz i zakończ
+            </vue-button>
+          </div>
+        </div>
+      </div>
+
+      {# v-if instade of v-show. remove invoice inputs from form if price == 0 #}
+      <div v-if="grossPrice > 0" class="card">
+        <div class="card-header">
+          {{ icon('paymentInvoiceData') }}
+          Dane do faktury
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-7">
+              <vue-form-group :errors="errors['invoice.name']" label="Nazwa firmy *">
+                <vue-text v-model="form.invoice.name" :is-invalid="'invoice.name' in errors" name="invoice[name]"></vue-text>
+              </vue-form-group>
+            </div>
+
+            <div class="col-sm-5">
+              <div class="d-flex">
+                <vue-form-group :errors="errors['invoice.country_id']" label="Kraj *" class="col-4">
+                  <vue-select
+                      :is-invalid="'invoice.country_id' in errors"
+                      :options="countries"
+                      placeholder="--"
+                      v-model="form.invoice.country_id"
+                      name="invoice[country_id]"
+                  />
+                </vue-form-group>
+                <vue-form-group :errors="errors['invoice.vat_id']" label="NIP / VAT-ID" class="col-8">
+                  <vue-text :is-invalid="'invoice.vat_id' in errors" v-model="form.invoice.vat_id" name="invoice[vat_id]" autocomplete="off"></vue-text>
+                </vue-form-group>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-4">
+              <vue-form-group :errors="errors['invoice.address']" label="Adres *">
+                <vue-text :is-invalid="'invoice.address' in errors" v-model="form.invoice.address" name="invoice[address]"></vue-text>
+              </vue-form-group>
+            </div>
+
+            <div class="col-sm-3">
+              <vue-form-group :errors="errors['invoice.postal_code']" label="Kod pocztowy *">
+                <vue-text :is-invalid="'invoice.postal_code' in errors" v-model="form.invoice.postal_code" name="invoice[postal_code]"></vue-text>
+              </vue-form-group>
+            </div>
+
+            <div class="col-sm-5">
+              <vue-form-group :errors="errors['invoice.city']" label="Miasto *">
+                <vue-text :is-invalid="'invoice.city' in errors" v-model="form.invoice.city" name="invoice[city]"></vue-text>
+              </vue-form-group>
+            </div>
+          </div>
+
+          <div>
+            <a href="{{ route('job.offer', [payment.job.id, payment.job.slug]) }}" class="btn btn-secondary float-start">
+              {{ icon('paymentBackToOffer') }}
+              Powrót do ogłoszenia
+            </a>
+            <vue-button submit :disabled="isProcessing" class="btn btn-primary float-end">
+              Zapłać i zapisz
+              {{ icon('paymentSaveAndPay') }}
+            </vue-button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <aside class="col-md-3">
+      <div class="card card-review" v-cloak>
+        <div class="card-header">
+          Twoja płatność obejmuje
+        </div>
+
+        <div class="card-body">
+          {% if payment.plan.bundle_size %}
+            <div class="my-1 d-flex justify-content-between">
+              <div>
+                Pakiet {{ payment.plan.bundle_size }} ogłoszeń ({{ payment.days }} dni)
+              </div>
+              <div class="text-end">
+                ${ money(netPrice) } zł
+              </div>
+            </div>
+          {% else %}
+            <div class="mt-1 mb-1 clearfix">
+              <div class="float-start">
+                Publikacja ogłoszenia ({{ payment.days }} dni)
+              </div>
+              <div class="float-end text-end">
+                ${ money(netPrice) } zł
+              </div>
+            </div>
+          {% endif %}
+          <div class="mt-1 mb-1 clearfix" v-if="coupon.amount > 0">
+            <div class="float-start">
+              Rabat
+            </div>
+            <div class="float-end text-end">
+              ${ money(coupon.amount) } zł
+            </div>
+          </div>
+
+          <div class="margin-xs-top margin-xs-bottom clearfix">
+            <div class="float-start">
+              VAT (${ percentageVatRate }%)
+            </div>
+            <div class="float-end">
+              ${ money(vatPrice) } zł
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="clearfix">
+            <div class="float-start">
+              <strong>Suma:</strong>
+            </div>
+            <div class="float-end">
+              <strong>${ money(grossPrice) } zł</strong>
+            </div>
+          </div>
+
+          ${ coupon.shown }
+
+          <hr>
+
+          <div v-show="!coupon.code && !isCoupon">
+            {{ icon('paymentCoupon') }}
+            <a @click="isCoupon = true" style=" cursor: pointer">
+              Masz kupon rabatowy?
+            </a>
+          </div>
+
+          <vue-form-group v-show="isCoupon" label="Masz kod promocyjny?" class="form-group">
+            <vue-text v-model="coupon.code" :is-invalid="coupon in errors" name="coupon" class="input-sm" autocomplete="off"></vue-text>
+          </vue-form-group>
+        </div>
+
+        <div class="card-footer">
+          <div class="clearfix">
+            <div class="float-start">
+              <span>Do zapłaty:</span>
+            </div>
+            <div class="float-end">
+              <span>${ money(grossPrice) } zł</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <vue-notifications></vue-notifications>
+  </div>
+
+  <script>
+    var stripeKey = '{{ stripe_key }}';
+    var countries = {{ countries|json_encode|raw }};
+    var netPrice = {{ net_price|json_encode|raw }};
+    var vatRates = {{ vat_rates|json_encode|raw }};
+    var vatRate = {{ vat_rate|number_format(2, '.') }};
+
+    var form = {
+      payment_method: 'card',
+      invoice: {
+        name: '{{ firm.name }}',
+        address: '{{ firm.street ~ ' ' ~ firm.street_number }}',
+        postal_code: '{{ firm.postcode }}',
+        city: '{{ firm.city }}',
+        vat_id: '{{ firm.vat_id }}',
+        country_id: {{ firm.country_id|default('null') }},
+        email: '{{ user('email') }}',
+      },
+    };
+  </script>
+{% endblock %}
+

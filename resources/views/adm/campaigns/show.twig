@@ -1,0 +1,159 @@
+{% extends 'adm.base' %}
+{% block title %}Edycja kampanii {{ parent() }}{% endblock %}
+
+{% import 'adm.multiacc.components.twig' as components %}
+
+{% block container %}
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span class="me-auto">
+        {{ icon('campaign') }}
+        Kampania reklamowa:
+        <b>{{ campaign.name }}</b>
+        {% if campaign.isPremium %}
+          (Premium)
+        {% endif %}
+      </span>
+      <a class="ms-2 btn btn-sm btn-secondary" href="{{ campaign.backHref }}">
+        {{ icon('genericBack') }}
+        Wróć
+      </a>
+      <a class="ms-2 btn btn-sm btn-secondary" href="{{ campaign.editHref }}">
+        {{ icon('genericEdit') }}
+        Edytuj
+      </a>
+    </div>
+
+    <div class="list-group list-group-flush">
+      <div class="list-group-item d-flex">
+        <span>
+          {{ icon(campaign.status.active ? 'campaignStatusActive' : 'campaignStatusInactive') }}
+          <b>Status</b>:
+          {% if campaign.status.active %}
+            <b class="text-success">aktywna</b>
+          {% else %}
+            <b class="text-danger">nie aktywna</b>
+          {% endif %}
+        </span>
+        <span class="ms-auto text-muted">
+          {{ campaign.status.statusText }}
+        </span>
+      </div>
+      <div class="list-group-item">
+        {{ icon('campaignDateRange') }}
+        <b>Zakres</b>:
+        {{ campaign.dateSince ?? '<span class="text-muted">nie określono</span>' }}
+        <span class="text-muted px-1">-</span>
+        {{ campaign.dateUntil ?? '<span class="text-muted">nie określono</span>' }}
+      </div>
+      <div class="list-group-item">
+        {{ icon('genericLink') }}
+        <b>Odnośnik reklamy</b>: {{ campaign.redirectUrl }}
+      </div>
+      <div class="list-group-item">
+        {{ icon('campaignVoivodeship') }}
+        <b>Województwo</b>: {{ campaign.voivodeship }}
+      </div>
+      <div class="list-group-item">
+        {{ icon('campaignCtr') }}
+        <b>CTR:</b>
+        {% if campaign.stats.ctr %}
+          <code>{{ campaign.stats.ctr }}</code>
+        {% else %}
+          <span class="text-muted">nie wyświetlono</span>
+        {% endif %}
+      </div>
+      <div class="list-group-item d-flex">
+        <span>
+          {{ icon('campaignExposures') }}
+          <b>Ekspozycje:</b>
+          {{ campaign.stats.exposures|number_format }}
+        </span>
+        <span class="ms-auto text-muted">
+          {{ icon('genericInfo', {title: 'Grafika wariantu została pokazana w min. 50%, przez min. 1000ms w przeglądarce użytkownika. Maks. 1 raz na odświeżenie strony.'}) }}
+        </span>
+      </div>
+      <div class="list-group-item">
+        {{ icon('campaignClicks') }}
+        <b>Kliknięcia:</b>
+        {{ campaign.stats.clicks|number_format }}
+      </div>
+      <div class="list-group-item d-flex">
+        <span>
+          {{ icon('campaignBlocked') }}
+          <b>Zablokowane:</b>
+          {{ campaign.stats.blocked|number_format }}
+        </span>
+        <span class="ms-auto text-muted">
+          {{ icon('genericInfo', {title: 'Baner nie został wyświetlony przez przeglądarkę użytkownika, prawdopodobnie z powodu blokady reklam.'}) }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {% if campaign.description %}
+    <div class="card">
+      <div class="card-header">
+        Opis kampanii
+      </div>
+      <div class="card-body">
+        {{ campaign.description }}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span class="me-auto">
+        {{ icon('campaignBanner') }}
+        Warianty
+      </span>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ campaign.uploadVariantsHref }}" enctype="multipart/form-data" class="d-flex gap-2 align-items-start">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <input type="file" name="images[]" multiple accept="image/*" class="form-control" required>
+        <button type="submit" class="btn btn-secondary flex-shrink-0">
+          {{ icon('genericAdd') }}
+          Prześlij
+        </button>
+      </form>
+      <div class="form-text">
+        Typ i rozmiar wariantu zostaną wykryte automatycznie na podstawie wymiarów obrazu.
+      </div>
+    </div>
+
+    {{ components.table('Ta kampania na razie nie ma żadnych banerów.', campaign.variants, [
+      { key: 'imageUrl', label: 'Grafika', labelIcon: 'campaignBanner', style: 'image', styleClass:'max-h-4 max-w-26' },
+      { key: 'bannerTypeTitle', label: 'Typ', labelIcon: 'campaignBannerType' },
+      { key: 'stats.exposures', label: 'Ekspozycje', labelIcon: 'campaignExposures', style: 'number' },
+      { key: 'stats.blocked', label: 'Zablokowane', labelIcon: 'campaignBlocked', style: 'number' },
+      { key: 'stats.clicks', label: 'Kliknięcia', labelIcon: 'campaignClicks', style: 'number' },
+      { key: 'stats.ctr', label: 'CTR', labelIcon: 'campaignCtr', default: 'nie wyświetlono'},
+      { label: 'Aktywny', style: 'rowActions' },
+    ], _self) }}
+
+    {% macro componentsTableRowActions_MagicValue(variant) %}
+      <form method="POST" action="{{ variant.toggleHref }}">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="enabled" value="{{ variant.enabled ? '0' : '1' }}">
+        <button
+            type="submit"
+            class="btn btn-sm btn-secondary"
+            title="{{ variant.enabled ? 'Wyłącz' : 'Włącz' }}">
+          {{ icon(variant.enabled ? 'campaignVariantEnabled' : 'campaignVariantDisabled') }}
+        </button>
+      </form>
+    {% endmacro %}
+  </div>
+
+  <style>
+    .max-h-4 {
+      max-height: 28px;
+    }
+
+    .max-w-26 {
+      max-width: 182px;
+    }
+  </style>
+{% endblock %}

@@ -1,0 +1,17 @@
+<section class="box">
+  <h4>
+    Szukaj pracy
+  </h4>
+  <div class="neon-tile neon-rounded p-3 mb-4 card-media overflow-hidden">
+    <div class="mb-3">
+      Najlepsze oferty na rynku IT
+    </div>
+    <hr class="neon-divider m-0">
+    <div class="mb-3">
+      {% include 'legacyComponents.jobs' %}
+    </div>
+    <a href="{{ route('neon.jobOffer.list') }}" class="neon-color-link">
+      Więcej ofert pracy
+    </a>
+  </div>
+</section>

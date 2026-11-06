@@ -1,0 +1,56 @@
+@charset "UTF-8";
+
+.progress {
+  padding: 5px;
+  position: relative;
+  background: linear-gradient(to bottom, $progress-bg 49%, #757575 100%);
+
+  span {
+    font-size: $font-size-sm;
+    color: white;
+    position: absolute;
+
+    &.rep, &.rank {
+      top: 11px;
+      line-height: 0;
+    }
+
+    &.rep {
+      left: 10px;
+    }
+
+    &.rank {
+      right: 10px;
+    }
+  }
+
+  strong {
+    font-size: 1.0em;
+    text-shadow: 1px 1px 2px #666;
+  }
+
+  small {
+    font-size: 0.8em;
+  }
+}
+
+.progress-bar {
+  opacity: 0.7;
+  height: 100%;
+  border-radius: $progress-border-radius;
+  background: linear-gradient(to bottom, #aed91d 50%, #abd600 100%);
+  box-shadow: inset 1px 1px 1px #fff;
+}
+
+.progress-bar-dotted {
+  display: inline;
+
+  .fa-circle {
+    font-size: 10px;
+    margin-right: 4px;
+  }
+
+  span:not(.editable) {
+    cursor: default;
+  }
+}

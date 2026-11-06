@@ -1,0 +1,42 @@
+{% macro campaignBanner(slot_type, desktopBannerSet, mobileBannerSet) %}
+  <div class="d-none d-lg-block">
+    {{ _self.campaignBannerForDevice(slot_type, desktopBannerSet) }}
+  </div>
+  <div class="d-lg-none">
+    {{ _self.campaignBannerForDevice(slot_type, mobileBannerSet) }}
+  </div>
+{% endmacro %}
+
+{% macro campaignBannerForDevice(slot_type, bannerSet) %}
+  {% if slot_type == 'square' %}
+    {% if bannerSet.sidebar %}
+      <div class="campaign-banner campaign-banner-square">
+        {{ _self.bannerImage(bannerSet.sidebar) }}
+      </div>
+    {% endif %}
+  {% elseif slot_type == 'header' %}
+    {{ _self.horizontalBanners('campaign-banner-header', bannerSet.horizontal) }}
+  {% elseif slot_type == 'feed' %}
+    {{ _self.horizontalBanners('campaign-banner-feed', bannerSet.feed) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro horizontalBanners(slotClass, banners) %}
+  {% if banners %}
+    <div class="campaign-banner {{ slotClass }}">
+      <div class="row g-2 justify-content-center">
+        {% for banner in banners %}
+          <div class="col-12 col-lg-6">
+            {{ _self.bannerImage(banner) }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro bannerImage(banner) %}
+  <a href="{{ banner.redirectUrl }}" target="_blank">
+    <img src="{{ banner.imageUrl }}" data-expose-url="{{ banner.exposeUrl }}" data-adblock-url="{{ banner.adblockUrl }}"/>
+  </a>
+{% endmacro %}

@@ -1,0 +1,176 @@
+@charset "UTF-8";
+
+.tag-clouds {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  > li {
+    display: inline-block;
+    margin-right: 1px;
+
+    > a,
+    > span {
+      font-size: 12px;
+      display: inline-block;
+      padding: 4px 7px;
+      margin: 1px 1px 1px 0;
+      border-radius: 5px;
+      position: relative;
+
+      &.selectedTag {
+        background-color: $tag-color;
+        color: #fff;
+      }
+    }
+
+    > a + small,
+    > span + small {
+      font-size: 10px;
+      color: $tag-counter-color;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    > li {
+      >a,
+      >span {
+        font-size: 11px;
+      }
+    }
+  }
+
+  .remove {
+    margin-left: .25rem;
+    padding: 1px 2px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $tag-color;
+      color: #fff;
+    }
+  }
+}
+
+.cloud {
+  > li {
+    > a {
+      margin: 2px 2px 4px 0;
+    }
+  }
+}
+
+@mixin tag-variant($paddingX, $paddingY, $thumbnailWidth) {
+  > li {
+    > a,
+    > span {
+      padding: $paddingX $paddingY;
+
+      img {
+        width: $thumbnailWidth;
+      }
+    }
+  }
+}
+
+.tag-clouds-md {
+  @include tag-variant(4px, 7px, 12px);
+}
+
+.tag-clouds-sm {
+  @include tag-variant(1px, 6px, 12px);
+}
+
+.tag-clouds-xs {
+  @include tag-variant(1px, 4px, 10px);
+}
+
+.tag-suggestion {
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tag-editor {
+  white-space: nowrap;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.25rem;
+  width: 100%;
+  position: relative;
+  cursor: default;
+  display: flex;
+  flex-flow: row wrap;
+
+  input {
+    background: transparent;
+    border: none;
+    position: relative;
+    outline: none;
+
+    flex: 1 1 auto;
+  }
+
+  .tag-clouds {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
+    margin-right: .1rem;
+  }
+
+  .suggest {
+    background-color: transparent;
+    border: 1px solid #dee2e6;
+    opacity: .7;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.tag-dropdown {
+  border-radius: 3px;
+  max-height: 200px;
+  overflow-y: auto;
+  top: calc(100% - 5px);
+  left: 0;
+
+  li {
+    padding: 6px 5px;
+    cursor: pointer;
+
+    span {
+      font-size: 11px;
+      background: $tag-bg;
+      border-radius: 5px;
+      display: inline;
+      color: $tag-color;
+      padding: 4px 10px;
+      text-shadow: 1px 1px 1px #FFF;
+      position: relative;
+      transition: all .25s linear;
+    }
+
+    &.hover {
+      color: $tag-hover-color;
+    }
+
+    small {
+      font-size: 80%;
+    }
+  }
+}
+
+.tag-editor:not(.form-control) {
+  .tag-dropdown {
+    top: calc(100% - 5px);
+  }
+
+  input {
+    padding: 5px 0;
+  }
+}

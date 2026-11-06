@@ -1,0 +1,5 @@
+{% if error %}
+    <span class="invalid-feedback">{{ error }}</span>
+{% elseif help %}
+    <span class="form-text form-text-help">{{ help|raw }}</span>
+{% endif %}

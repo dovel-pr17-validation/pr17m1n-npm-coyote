@@ -1,0 +1,38 @@
+# Project
+.idea/
+*.iml
+.mcp.json
+
+# Composer
+composer.phar
+vendor/
+.composer/
+
+# PhpUnit
+.phpunit.result.cache
+.phpunit.cache/
+
+# Node
+node_modules/
+
+# Yarn
+.yarnrc.yml
+.yarn/
+
+# Laravel
+.env
+bootstrap/cache/
+
+# Plugins
+app/Plugins/
+
+public/css/
+public/js/
+
+# Secrets
+storage/oauth-private.key
+storage/oauth-public.key
+
+# Claude
+.claude/
+.nwave/

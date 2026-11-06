@@ -1,0 +1,83 @@
+{% extends 'layout.twig' %}
+
+{% set current_tag = render_params.tagName|default(null) %}
+
+{% block title %}{% if current_tag %}{{ current_tag }} :: {% endif %}Mikroblogi{{ parent() }}{% endblock %}
+
+{% block description %}
+  {% if current_tag %}
+    {{ current_tag }} w mikroblogach. Sprawdź, co inni użytkownicy piszą o tym temacie. Chcesz podzielić się czymś ciekawym w temacie: {{ current_tag }}? Utwórz wpis w mikroblogu.
+  {% else %}
+    Mikroblogi umożliwiają prowadzenie własnego dziennika programistycznego. Jeżeli masz coś ciekawego do zakomunikowania, znalazłeś ciekawy link, chcesz się podzielić fragmentem ciekawego kodu źródłowego, to jest miejsce dla Ciebie.
+  {% endif %}
+{% endblock %}
+
+{% block keywords %}blog, programista, programiści, newsy{% endblock %}
+
+{% import 'legacyComponents.modals' as modal %}
+{% from 'titleBanner.titleBanner' import titleBanner %}
+
+{% block container %}
+  <div class="row mb-2 neon-legacy">
+    <div class="col-md-12">
+      <h1>{{ headingTitle }}</h1>
+    </div>
+  </div>
+  <div id="js-microblog" class="row">
+    <div class="col-md-9">
+      <div class="neon-modern mb-3">
+        {{ titleBanner(title: headingTitle, crumbs:breadcrumbs) }}
+      </div>
+      {% if auth_check() %}
+        <div class="d-flex justify-content-end">
+          <a class="btn btn-primary btn-sm neon-primary-button" href="{{ microblogNewUrl }}">
+            {{ icon('microblogNew') }}
+            Nowy wpis
+          </a>
+          <a class="btn btn-primary btn-sm ms-2 neon-primary-button" href="{{ microblogMineUrl }}">
+            {{ icon('microblogMine') }}
+            Moje wpisy
+          </a>
+        </div>
+      {% endif %}
+
+      {% if tags.others is not empty %}
+        <div class="box mb-2">
+          <h4 class="heading">
+            {{ icon('tagsPopularMicroblog') }}
+            Tagi popularne na mikroblogu
+          </h4>
+          <div class="pt-2 pb-2">
+            <ul class="tag-clouds">
+              {% for tag in tags.others %}
+                <li class="mb-1 me-1">
+                  <a href="{{ route('microblog.tag', [tag.name]) }}" class="neon-tag">
+                    {{ tag.name }}
+                  </a>
+                  <small>&times; {{ tag.count }}</small>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="mt-3"></div>
+      <vue-microblog v-for="microblog in microblogs" :key="microblog.id" :microblog="microblog" :wrap="true"></vue-microblog>
+
+      <div class="mt-3 mb-3 d-flex justify-content-center">
+        <vue-pagination :current-page="currentPage" :total-pages="totalPages" @change="changePage"></vue-pagination>
+      </div>
+    </div>
+    {% include 'microblog.aside' %}
+    <vue-notifications></vue-notifications>
+  </div>
+
+  <script>
+    var pagination = {{ pagination|json_encode|raw }};
+    var flags = {{ flags|json_encode|raw }};
+    var popularTags = {{ popular_tags|json_encode|raw }};
+    var recommendedUsers = {{ recommended_users|json_encode|raw }};
+    var emojis = {{ emojis|json_encode|raw }};
+  </script>
+{% endblock %}

@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+.recommended-users {
+  .card-body {
+    padding: .75rem;
+  }
+
+  .media {
+    border-bottom: 1px solid #dee2e6;
+    padding: .5rem 0 .5rem 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}

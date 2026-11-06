@@ -1,0 +1,7 @@
+{% extends 'forms.themes.inline.row' %}
+{% import 'legacyComponents.forms' as forms %}
+
+{% block label %}{% endblock %}
+{% block wrap %}
+    {{ include(widget_path) }}
+{% endblock %}

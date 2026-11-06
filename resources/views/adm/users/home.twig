@@ -1,0 +1,12 @@
+{% extends 'adm.base' %}
+{% block title %}Użytkownicy {{ parent() }}{% endblock %}
+
+{% block card %}
+    {{ grid(grid) }}
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    {% include 'adm.partials.geo-ip' %}
+{% endblock %}

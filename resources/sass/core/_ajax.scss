@@ -1,0 +1,18 @@
+/** 
+ * @deprecated 
+ */
+#ajax-loader {
+  opacity: .5;
+  position: absolute;
+  background-color: #fff;
+
+  .loadingIcon {
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    margin-left: -20px;
+    margin-top: -10px;
+    font-size: $font-size-lg;
+    color: #000;
+  }
+}

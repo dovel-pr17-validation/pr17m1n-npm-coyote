@@ -1,0 +1,32 @@
+{% extends 'user.base' %}
+{% block title %}Usunięcie konta {{ parent() }}{% endblock %}
+
+{% import 'legacyComponents.forms' as forms %}
+
+{% block content %}
+  <h2>Usunięcie konta</h2>
+
+  <div id="box-start" class="card">
+    <div class="card-body">
+      <div class="alert alert-warning">
+        <strong>Uwaga!</strong> Ta operacja spowoduje bezpowrotne usunięcie Twojego konta. Czy jesteś pewien, że chcesz kontynuować?
+      </div>
+
+      {{ form_open({'method': 'POST', 'role': 'form', 'url': route('user.delete')}) }}
+
+      {% if user('password') %}
+        {{ forms.password('password', 'Hasło') }}
+      {% endif %}
+
+      <div class="form-group row">
+        <div class="col-md-6 col-12 offset-md-4">
+          <button type="submit" class="btn btn-danger w-100" data-submit-state="Usuwanie....">
+            Potwierdzam, że chcę usunąć moje konto
+          </button>
+        </div>
+      </div>
+
+      {{ form_close() }}
+    </div>
+  </div>
+{% endblock %}

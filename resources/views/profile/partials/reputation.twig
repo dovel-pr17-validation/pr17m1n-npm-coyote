@@ -1,0 +1,27 @@
+{% from 'reputationBar.reputationBar' import reputationBar %}
+
+{% if user.reputation > 0 %}
+  <div class="box pt-2 mb-4">
+    <h4 class="heading mb-4">
+      {{ icon('profileReputationActivity') }}
+      Aktywność
+    </h4>
+    <div class="mb-4">
+      <div id="wrap">
+        <div id="reputation">
+          {% include 'profile.partials.reputation_list' %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box pt-2 mb-4">
+    <h4 class="heading mb-4">
+      {{ icon('profileReputationHistory') }}
+      Historia reputacji
+    </h4>
+    <div style="height:280px;">
+      {{ chart }}
+    </div>
+    {{ reputationBar(user.reputation, rank.percentage) }}
+  </div>
+{% endif %}

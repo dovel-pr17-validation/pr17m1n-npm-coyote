@@ -1,0 +1,71 @@
+type: object
+properties:
+  id:
+    type: integer
+  votes:
+    type: integer
+  views:
+    type: integer
+  created_at:
+    type: string
+    format: "datetime"
+  updated_at:
+    type: string
+    format: "datetime"
+  text:
+    type: string
+    description: "Raw version of microblog"
+  html:
+    type: string
+    description: "HTML version of microblog"
+  voters:
+    type: array
+    items:
+      type: string
+    description: "Array with voters name"
+  editable:
+    type: boolean
+    nullable: true
+    description: "Determines if current microblog can be edited by given user"
+  comments:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        votes:
+          type: integer
+        parent_id:
+          type: integer
+          description: "ID of parent microblog"
+        created_at:
+          type: string
+          format: "datetime"
+        updated_at:
+          type: string
+          format: "datetime"
+        text:
+          type: string
+          description: "Raw version of comment"
+        html:
+          type: string
+          description: "HTML version of comment"
+        user:
+          $ref: './user.yaml'
+  user:
+    $ref: './user.yaml'
+  media:
+    type: array
+    items:
+      type: object
+      properties:
+        url:
+          type: string
+          description: "Full URL to uploaded image"
+        thumbnail:
+          type: string
+          description: "Full URL to thumbnail image"
+        name:
+          type: string
+          description: "Name of the file"

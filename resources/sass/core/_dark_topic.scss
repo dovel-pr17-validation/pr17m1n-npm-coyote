@@ -1,0 +1,236 @@
+body.theme-dark {
+  .card {
+    color: inherit;
+  }
+
+  color: #acacac;
+
+  * {
+    text-shadow: none !important;
+  }
+
+  h1 {
+    color: #dedede;
+  }
+
+  h1.topic-title {
+    color: #acacac;
+  }
+
+  .card {
+    background:   #1a1a1a;
+    border-color: #2f2f2f;
+  }
+
+  main {
+    &.mainbar {
+      ul#sort li a {
+        text-shadow: none;
+        color:       #acacac;
+      }
+    }
+
+    .post-delete,
+    .comment-delete {
+      color:            #f7e8cf;
+      background-color: #5f3e26;
+    }
+
+    .card-section {
+      color: #acacac;
+    }
+
+    .card-topics {
+      .flagged {
+        color:            #f7dddc;
+        background-color: #5c2726;
+
+        &:nth-child(even) {
+          background-color: #712b29;
+        }
+      }
+
+      .card-body.tagged {
+        &,
+        &:nth-child(even) {
+          background-color: #1d3404;
+          border:           none;
+        }
+      }
+
+      .card-body.tagged + .card-body.tagged {
+        border-top: 1px solid #324106;
+      }
+    }
+
+    div {
+      .card-post {
+        .card-header {
+          .small a time {
+            color: #acacac;
+          }
+        }
+
+        .card-body {
+          .post-vote {
+            strong.vote-count,
+            .vote-up {
+              color: #919191;
+            }
+
+            a.vote-accept.on {
+              color: #afe225;
+            }
+          }
+
+          .post-comments {
+            .show-all-comments a {
+              color: #acacac;
+            }
+
+            .post-comment {
+              color:      #acacac;
+              border-top: 1px solid #2f2f2f;
+
+              a {
+                time {
+                  color: #8f9ba5 !important;
+
+                  &:hover {
+                    text-decoration-color: #8f9ba5 !important;
+                  }
+                }
+              }
+            }
+          }
+
+          form {
+            .form-group {
+              label.custom-control-label {
+                color: #acacac;
+              }
+            }
+
+            .card {
+              background-color: #272727;
+              border-color:     #242a30;
+
+              .card-body {
+                ul li {
+                  border-color: #2f2f2f;
+                }
+              }
+            }
+          }
+        }
+
+        .card-footer {
+          border-top: 1px solid #2f2f2f;
+
+          button,
+          .btn {
+            color: #acacac;
+
+            &:hover {
+              background:   #2b2b2b;
+              border-color: #323232;
+            }
+          }
+        }
+      }
+
+      .page-pagination {
+        .page-page-selector {
+
+        }
+      }
+
+      form {
+        .btn.btn-danger {
+          color:            #1d1d1d;
+          background-color: #9f3835;
+          border:           none;
+        }
+      }
+
+      section.page-change-category {
+        i.fa-circle-arrow-right {
+          color: #c8c8c8;
+        }
+
+        select {
+          color:            #c8c8c8;
+          background-color: #272727;
+          border-color:     #404040;
+
+          &:focus {
+            color:            #c8c8c8;
+            background-color: #323232;
+            border-color:     #789b17;
+          }
+        }
+      }
+    }
+  }
+
+  ul.side-menu {
+    li {
+      &.divider {
+        border-bottom: 1px solid #2f2f2f;
+      }
+    }
+  }
+
+  aside {
+    .btn.btn-secondary.btn-sm {
+      border: 1px solid #404040;
+
+      &:hover {
+        color: #789b17;
+      }
+    }
+  }
+
+  .topic-container {
+    ul.tag-clouds {
+      li a {
+        background-color: #282828;
+        color:            #acacac;
+      }
+    }
+  }
+
+  .img-thumbnail {
+    background:   #121212;
+    border-color: #242a30;
+  }
+
+  .btn.btn-secondary {
+    color:        #dedede;
+    background:   #1a1a1a;
+    border-color: #2f2f2f;
+    border-width: 2px;
+  }
+
+  select.form-control {
+    color:            #c8c8c8;
+    background-color: #272727;
+    border-color:     #404040;
+
+    &:focus {
+      color:            #c8c8c8;
+      background-color: #323232;
+      border-color:     #789b17;
+    }
+  }
+
+  #js-submit-form {
+    input {
+      background-color: #1a1a1a;
+    }
+  }
+
+  .stream .media:not(:last-child) {
+    border-bottom: 1px solid #333;
+  }
+}

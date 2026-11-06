@@ -1,0 +1,24 @@
+@charset "UTF-8";
+@use "../../feature/theme/theme";
+@use "../../feature/lookAndFeel/feel";
+@use "../../feature/lookAndFeel/style-guide" as style;
+
+@import "../components/floaters";
+
+.scroll-top {
+  @include floater;
+  box-sizing: content-box;
+  font-size: 16px;
+  display: none;
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  position: fixed;
+  text-align: center;
+  cursor: pointer;
+  color: #80a41a;
+
+  body.scrolled-down & {
+    display: block;
+  }
+}

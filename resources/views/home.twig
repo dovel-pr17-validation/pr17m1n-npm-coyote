@@ -1,0 +1,264 @@
+{% extends 'layout' %}
+
+{% block title %}4programmers.net – Największa Społeczność Programistyczna w Polsce + Job Board{% endblock %}
+{% block description %}Dołącz do ponad 130 tys. zarejestrowanych programistów i skorzystaj z największego forum w Polsce. Szukasz pracy w IT, pomocy technicznej lub chcesz dzielić się wiedzą? Poznaj 4programmers.net już dziś!{% endblock %}
+{% block keywords %}społeczność programistyczna, forum programistyczne, programiści w Polsce, praca IT, job board, oferty pracy, pomoc w programowaniu, 4programmers{% endblock %}
+
+{% import 'legacyComponents.modals' as modal %}
+{% from 'titleBanner.titleBanner' import titleBanner %}
+{% from 'membersRadar.membersRadar' import membersRadar %}
+{% from 'progressBar.progressBar' import progressBar %}
+{% from 'campaignBanner.campaignBanner' import campaignBanner %}
+{% from 'prototypeVoteBanner.prototypeVoteBanner' import prototypeVoteBanner %}
+
+{% block container %}
+  {{ render_block('homepage_banner') }}
+
+  <div class="row">
+    <div class="col-12 mb-3">
+      <!-- TODO remove margin if not enabled -->
+      {{ campaignBanner('header', campaign_banners_home_desktop, campaign_banners_home_mobile) }}
+    </div>
+  </div>
+  <div class="row neon-modern">
+    <div class="col-lg-8">
+      {{ titleBanner(title:'Największa społeczność programistyczna w Polsce') }}
+    </div>
+    <div class="col-lg-4 mt-2 mt-lg-0">
+      {{ membersRadar(homepageMembers.usersTotal, homepageMembers.usersOnline, homepageMembers.guestsOnline) }}
+    </div>
+  </div>
+  <div class="row">
+    <main class="col-md-8">
+      <section id="box-forum" class="box mt-4">
+        <h2 class="h4">
+          Co nowego na forum?
+        </h2>
+        <div class="neon-tile neon-tile--muted neon-rounded mb-3 p-3">
+          <div class="row">
+            <div class="col-lg-6">
+              <ul id="forum-tabs" class="nav nav-pills nav-forum neon-tabber">
+                <li class="nav-item">
+                  <span
+                      class="nav-link neon-tabber-tab {{ settings.topicMode == 'interesting' ? 'active' }}"
+                      title="Zobacz najciekawsze wątki na forum"
+                      data-bs-target="#interesting"
+                      data-bs-toggle="tab">
+                    Najciekawsze
+                  </span>
+                </li>
+                <li class="nav-item">
+                  <span
+                      class="nav-link neon-tabber-tab {{ settings.topicMode == 'newest' ? 'active' }}"
+                      title="Lista najnowszych wątków na forum"
+                      data-bs-target="#newest"
+                      data-bs-toggle="tab">
+                    Nowe wątki
+                  </span>
+                </li>
+              </ul>
+
+              <div id="box-forum-headline" class="interesting-topics">
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane {{ settings.topicMode == 'interesting' ? 'active' }}" id="interesting">
+                    {% for topic in interesting %}
+                      <div class="row neon-divider-b">
+                        <span class="display-count col-sm-2 col-lg-3 col-xl-2 d-none d-sm-block p-0">
+                          <strong class="text-nowrap">{{ topic.views }}</strong>
+                          <small class="text-nowrap">
+                            {{ declination(topic.views, ['wyświetlenie', 'wyświetlenia', 'wyświetleń'], true) }}
+                          </small>
+                        </span>
+
+                        <div class="col-12 col-sm-10 col-lg-9 col-xl-10">
+                          <a title="[{{ topic.last_post_created_at|format_date }}] {{ topic.title }}"
+                             href="{{ route('forum.topic', [topic.forum_slug, topic.id, topic.slug]) }}"
+                             class="title">
+                            {{ topic.title }}
+                          </a>
+                          <a href="{{ route('forum.category', [topic.forum_slug]) }}" class="category neon-color-link">
+                            {{ topic.forum }}
+                          </a>
+                          <small class="topic-created float-end">
+                            {{ topic.last_post_created_at|format_date }}
+                          </small>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+
+                  <div role="tabpanel" class="tab-pane {{ settings.topicMode == 'newest' ? 'active' }}" id="newest">
+                    {% for topic in newest %}
+                      <div class="row">
+                        <span class="display-count col-sm-2 col-lg-3 col-xl-2 d-none d-sm-block p-0">
+                          <strong class="text-nowrap">{{ topic.views }}</strong>
+                          <small class="text-nowrap">
+                            {{ declination(topic.views, ['wyświetlenie', 'wyświetlenia', 'wyświetleń'], true) }}
+                          </small>
+                        </span>
+
+                        <div class="col-12 col-sm-10 col-lg-9 col-xl-10">
+                          <a title="[{{ topic.last_post_created_at|format_date }}] {{ topic.title }}"
+                             href="{{ route('forum.topic', [topic.forum_slug, topic.id, topic.slug]) }}"
+                             class="title">
+                            {{ topic.title }}
+                          </a>
+                          <a href="{{ route('forum.category', [topic.forum_slug]) }}" class="category neon-color-link">
+                            {{ topic.forum }}
+                          </a>
+                          <small class="float-end topic-created">
+                            {{ topic.last_post_created_at|format_date }}
+                          </small>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="stream-wrapper" class="col-lg-6">
+              <ul class="nav nav-pills nav-forum">
+                <li class="nav-item">
+                  <span class="nav-link nav-link-style-only">
+                    Ostatnia aktywność
+                  </span>
+                </li>
+              </ul>
+              <div id="stream">
+                <div class="recent-activity neon-divider-l">
+                  {% for activity in activities %}
+                    <div class="media">
+                      <div
+                          class="neon-tile__timeline-icon homepage-activity {{ activity.object }} d-none d-sm-flex justify-content-center align-items-center"
+                          title="{{ activity.headline|striptags|unescape }}">
+                        {% if activity.object == 'microblog' %}
+                          {{ icon('homepageActivityMicroblog') }}
+                        {% elseif activity.object == 'comment' %}
+                          {{ icon('homepageActivityPostComment') }}
+                        {% elseif activity.object == 'topic' %}
+                          {{ icon('homepageActivityTopic') }}
+                        {% elseif activity.object == 'post' %}
+                          {{ icon('homepageActivityPost') }}
+                        {% endif %}
+                      </div>
+                      <div class="d-none d-sm-block me-2">
+                        <a href="{{ route('profile', [activity.user_id]) }}">
+                          <div style="width:42px;height:42px;" class="neon-avatar-border">
+                            {{ user_avatar(activity.user.photo, activity.user.name) }}
+                          </div>
+                        </a>
+                      </div>
+                      <div class="media-body">
+                        <p class="neon-contains-a-color-link">{{ activity.headline|raw }}</p>
+                        <small>{{ activity.created_at|format_date }}</small>
+                        <strong class="neon-divider-l">{{ activity.excerpt }}</strong>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="js-microblog" class="box">
+        <h4>
+          Popularne wpisy na mikroblogu
+        </h4>
+        <vue-microblog
+            v-for="microblog in microblogs" :key="microblog.id" :microblog="microblog"
+            :wrap="true"></vue-microblog>
+        <vue-notifications></vue-notifications>
+      </section>
+
+      <ul class="mt-3 mb-3 d-flex justify-content-center pagination">
+        <a class="page-link" href="{{ route('microblog.home') }}">
+          Pokaż więcej
+        </a>
+      </ul>
+    </main>
+
+    <div class="col-md-4 position-relative mt-4">
+      <aside class="sticky-aside">
+        {{ render_block('homepage_banner_side') }}
+        <div class="box mb-4">
+          <h4>Użytkownicy online</h4>
+          {{ globalViewers|raw }}
+        </div>
+        {{ render_block('job_ads') }}
+        <section class="box my-4">
+          <h4>Reputacja użytkowników</h4>
+          <div class="tab-content neon-tile neon-rounded variable-names card-reputation">
+            <div class="pt-2 px-3">
+              <div id="reputation-tabs" class="nav nav-pills neon-tabber">
+                <span data-bs-toggle="tab" data-bs-target="#week"
+                      class="nav-link neon-tabber-tab {{ settings.reputationMode == 'week' ? 'active' }}">
+                  <span class="long-name">W tym tygodniu</span>
+                  <span class="short-name">Tyg.</span>
+                </span>
+                <span data-bs-toggle="tab" data-bs-target="#month"
+                      class="nav-link neon-tabber-tab {{ settings.reputationMode == 'month' ? 'active' }}">
+                  <span class="long-name">W tym miesiącu</span>
+                  <span class="short-name">Mies.</span>
+                </span>
+                <span data-bs-toggle="tab" data-bs-target="#quarter"
+                      class="nav-link neon-tabber-tab {{ settings.reputationMode == 'quarter' ? 'active' }}">
+                  <span class="long-name">W tym kwartale</span>
+                  <span class="short-name">Kwar.</span>
+                </span>
+              </div>
+            </div>
+
+            {% for tab, users in reputation %}
+              <div id="{{ tab }}" role="tabpanel" class="p-3 pb-1 tab-pane {{ settings.reputationMode == tab ? 'active' }}">
+                {% for user in users %}
+                  <div class="media mb-4">
+                    <div class="me-2">
+                      <a href="{{ route('profile', [user.id]) }}">
+                        <div class="neon-avatar-border i-45">
+                          {{ user_avatar(user.photo, user.name) }}
+                        </div>
+                      </a>
+                    </div>
+                    <div class="flex-grow-1">
+                      <span class="mb-1 d-block">
+                        <a data-user-id="{{ user.id }}" href="{{ route('profile', [user.id]) }}">
+                          {{ user.name }}
+                        </a>
+                      </span>
+                      <div class="d-flex align-items-center">
+                        <span style="min-width:54px;">
+                          <b>{{ user.reputation }}</b> pkt
+                        </span>
+                        <div class="flex-grow-1 ms-1 me-3">
+                          {{ progressBar(user.percentage|round) }}
+                        </div>
+                        <b>{{ loop.index }}</b>
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="py-4">
+                    <small class="d-block text-muted text-center py-4">
+                      Bądź pierwszą osobą która otrzyma punkty reputacji w tym okresie.
+                    </small>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+        <div class="mt-4">
+          {{ campaignBanner('square', campaign_banners_home_desktop, campaign_banners_home_mobile) }}
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var microblogs = {{ microblogs|json_encode|raw }};
+    var flags = {{ flags|json_encode|raw }};
+    var emojis = {{ emojis|json_encode|raw }};
+  </script>
+{% endblock %}

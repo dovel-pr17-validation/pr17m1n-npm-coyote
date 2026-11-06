@@ -1,0 +1,101 @@
+.microblog {
+  @include media-breakpoint-down(lg) {
+    textarea::placeholder {
+      color: transparent;
+    }
+  }
+
+  .media-heading {
+    margin-bottom: 2px;
+
+    a {
+      font-size: 16px;
+    }
+  }
+
+  textarea {
+    resize:        none;
+    padding-right: 32px;
+  }
+
+  .media-body {
+    min-width: 0; // thanks to this, text will not overflow its parent
+  }
+}
+
+.microblog-text {
+  padding:  10px 0;
+  overflow: hidden;
+  position: relative;
+
+  a {
+    text-decoration: underline;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+  
+  img {
+    max-width: 100%;
+    max-height: 200px;
+  }
+}
+
+.microblog-text,
+.comment-text {
+  img.img-smile {
+    height: 1em;
+  }
+}
+
+.microblog-opg {
+  color: inherit;
+
+  &:hover {
+    text-decoration: none;
+    color:           inherit;
+  }
+
+  .microblog-opg-image {
+    background-size:         cover;
+    background-position:     center center;
+    background-repeat:       no-repeat;
+    height:                  220px;
+    border-top-left-radius:  5px;
+    border-top-right-radius: 5px;
+  }
+
+  .card-body {
+    padding: .75rem;
+  }
+
+  p {
+    margin-bottom: .5rem;
+  }
+
+  @include media-breakpoint-up(lg) {
+    max-width: 50%;
+  }
+}
+
+.show-more {
+  position: absolute;
+  bottom:   0;
+  z-index:  9;
+  display:  none;
+}
+
+.microblog-tags {
+  overflow:     hidden;
+  height:       28px;
+  margin-left:  auto;
+  margin-right: .25rem;
+
+  .tag-clouds-md {
+    white-space:                nowrap;
+    overflow-x:                 scroll;
+    overflow-y:                 hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+}

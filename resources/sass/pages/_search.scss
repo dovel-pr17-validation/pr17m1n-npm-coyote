@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+#search-results {
+  h2 {
+    font-size: $font-size-lg;
+    max-width: 50%;
+  }
+
+  em {
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  .children {
+    font-size: $font-size-sm;
+    padding-left: 1rem;
+
+    a {
+      max-width: 60%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}

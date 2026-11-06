@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Logowanie do panelu administracyjnego :: 4programmers.net</title>
+
+  <link rel="stylesheet" href="{{ cdn('css/stylesEager.css') }}">
+  <link rel="shortcut icon" href="{{ asset('img/favicon.svg') }}?v2" type="image/svg+xml">
+
+  <style>
+      body.theme-dark {
+          input.form-control {
+              background-color: #1a1a1a;
+          }
+      }
+  </style>
+</head>
+<body class="{{ darkTheme ? 'theme-dark' : 'theme-light' }}">
+<div id="container">
+  {% import 'legacyComponents.forms' as forms %}
+
+  <div class="row g-0 mt-5">
+    <div class="col-8 col-sm-6 col-md-4 col-lg-3 col-xl-2 mx-auto">
+      {% if errors.any %}
+        <div class="alert alert-danger">Nieudane logowanie.</div>
+      {% endif %}
+
+      <div class="d-flex flex-column align-items-center mb-4">
+        <div class="img-thumbnail" style="width:75px; height:75px;">
+          {{ user_avatar(user.photo, user.name) }}
+        </div>
+        <b>{{ user.name }}</b>
+      </div>
+
+      {{ form_open({'url': route('adm.home'), 'method': 'POST'}) }}
+      <div class="form-group">
+        <p class="mb-1">Podaj swoje hasło:</p>
+        {{ form_password('password', {'class': 'form-control', 'placeholder': 'Hasło', 'autofocus': 'autofocus'}) }}
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary col-12" data-submit-state="Logowanie...">
+          Logowanie
+        </button>
+      </div>
+      {{ form_close() }}
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+@import "helpers/variables";
+@import "helpers/mixins";
+
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+@import "bootstrap/scss/root";
+@import "ejectedReboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "ejectedCard";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/progress";
+@import "bootstrap/scss/list-group";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/helpers";
+@import "bootstrap/scss/utilities/api";
+
+.img-thumbnail {
+  padding:          .25rem;
+  background-color: #fafafa;
+  border:           1px solid #dee2e6;;
+  border-radius:    0.375rem;
+  max-width:        100%;
+  height:           auto;
+}
+
+$alert-warning-color:      #714907;
+$alert-warning-background: #f7e8cf;
+$alert-warning-border:     #f4dfbb;
+$alert-danger-color:       #712b29;
+$alert-danger-background:  #f7dddc;
+$alert-danger-border:      #f4cfce;
+@import "helpers/bootstrap";
+@import "icons/icons";
+@import "base/reset";
+
+@import "layout/footer";
+@import "layout/grid";
+@import "layout/header";
+@import "layout/theme";
+
+@import "core/alerts";
+@import "core/badges";
+@import "core/box";
+@import "core/breadcrumbs";
+@import "core/buttons";
+@import "core/code";
+@import "core/dropdowns";
+@import "core/events";
+@import "core/flash";
+@import "core/forms";
+@import "core/markdown";
+@import "core/metadata";
+@import "core/microblog";
+@import "core/navs";
+@import "core/pagination";
+@import "core/panels";
+@import "core/progress-bars";
+@import "core/related";
+@import "core/sidemenu";
+@import "core/skeleteon";
+@import "core/stream";
+@import "core/tables";
+@import "core/toasts";
+
+@import "core/dark_4play";
+@import "core/dark_alert";
+@import "core/dark_bootstrap";
+@import "core/dark_box";
+@import "core/dark_common";
+@import "core/dark_editor";
+@import "core/dark_flash";
+@import "core/dark_header";
+@import "core/dark_input";
+@import "core/dark_job";
+@import "core/dark_job_offers";
+@import "core/dark_markdown";
+@import "core/dark_microblog";
+@import "core/dark_modal";
+@import "core/dark_pm";
+@import "core/dark_ps";
+@import "core/dark_settings";
+@import "core/dark_tabs";
+@import "core/dark_topic";
+@import "core/dark_user";
+@import "core/dark_wiki";
+
+@import "components/tags";
+@import "components/forum/post"; // it needs to be here because post's placeholder use styles in this specific file
+@import "components/forum/tree_topic";
+@import "components/user_status";
+
+@import "pages/auth";
+@import "pages/errors";
+@import "pages/forum";
+@import "pages/guide";
+@import "pages/help";
+@import "pages/homepage";
+@import "pages/job";
+@import "pages/microblog";
+@import "pages/pm";
+@import "pages/profile";
+@import "pages/search";
+@import "pages/user";
+@import "pages/wiki";
+
+@import "../feature/stickyAside/sticky-aside";
+@import "../feature/viewersOnline/viewers-online";
+@import "../js/components/defaultAvatar";
+
+@import "../../node_modules/@riddled/4play/src/style";

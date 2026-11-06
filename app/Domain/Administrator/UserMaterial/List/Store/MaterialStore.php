@@ -1,0 +1,143 @@
+<?php
+namespace Coyote\Domain\Administrator\UserMaterial\List\Store;
+
+use Carbon\Carbon;
+use Coyote\Microblog;
+use Coyote\Models\Flag\Resource;
+use Coyote\Post;
+use Coyote\Services\UrlBuilder;
+use Illuminate\Database\Eloquent;
+use Illuminate\Database\Query;
+
+class MaterialStore {
+    public function fetch(MaterialRequest $request): MaterialResult {
+        /** @var Eloquent\Builder $query */
+        $query = $this->queryByType($request->filter->type)->withTrashed();
+
+        $this->whereTrashed($query, $request->filter->deleted);
+
+        $materialTable = $query->getModel()->getTable();
+        $flagResourceTable = (new Resource)->getTable();
+
+        if ($request->filter->reported !== null) {
+            $query->whereExists(
+                callback:fn(Query\Builder $query) => $query
+                    ->from($flagResourceTable)
+                    ->whereColumn("$flagResourceTable.resource_id", "$materialTable.id")
+                    ->where("$flagResourceTable.resource_type",
+                        $this->resourceClassByType($request->filter->type)),
+                not:!$request->filter->reported);
+        }
+        if ($request->filter->authorId !== null) {
+            $query->where('user_id', $request->filter->authorId);
+        }
+        if ($request->filter->reportOpen !== null) {
+            $query->whereRelation('flags', function (Eloquent\Builder $query) use ($request) {
+                $this->whereTrashed($query, !$request->filter->reportOpen);
+            });
+        }
+        $materials = $query
+            ->clone()
+            ->select("$materialTable.*", 'users.name AS username', 'users.photo AS user_photo')
+            ->leftJoin('users', 'users.id', '=', 'user_id')
+            ->offset(($request->page - 1) * $request->pageSize)
+            ->limit($request->pageSize)
+            ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->map(fn(Post|Microblog|Post\Comment $material) => new Material(
+                $material->id,
+                $this->materialType($request->filter->type),
+                $material->created_at,
+                $this->deletedAt($material),
+                $this->parentDeletedAt($material),
+                $this->microblogParentId($material),
+                $material->username ?? '',
+                $material->user_photo,
+                $material->text,
+                $material->flags()->withTrashed()->exists(),
+                $material->flags()->exists(),
+                $this->href($material),
+            ))
+            ->toArray();
+
+        return new MaterialResult(
+            $materials,
+            $query->count(),
+        );
+    }
+
+    private function queryByType(SearchFilterType $type): Eloquent\Builder {
+        return match ($type) {
+            SearchFilterType::Post        => Post::query(),
+            SearchFilterType::PostComment => Post\Comment::query(),
+            SearchFilterType::Blog        => Microblog::query(),
+        };
+    }
+
+    private function resourceClassByType(SearchFilterType $type): string {
+        return match ($type) {
+            SearchFilterType::Post        => Post::class,
+            SearchFilterType::PostComment => Post\Comment::class,
+            SearchFilterType::Blog        => Microblog::class,
+        };
+    }
+
+    private function deletedAt(Post|Post\Comment|Microblog $material): ?Carbon {
+        if (\is_string($material->deleted_at)) {
+            return new Carbon($material->deleted_at, 'Europe/Warsaw');
+        }
+        return $material->deleted_at;
+    }
+
+    private function parentDeletedAt(Post|Post\Comment|Microblog $material): ?Carbon {
+        if ($material instanceof Post\Comment) {
+            return $this->deletedAt($material->post);
+        }
+        return null;
+    }
+
+    private function whereTrashed(Eloquent\Builder $query, ?bool $deleted): void {
+        if ($deleted === true) {
+            $query->onlyTrashed();
+        }
+        if ($deleted === false) {
+            $query->withoutTrashed();
+        }
+    }
+
+    private function microblogParentId(Post|Post\Comment|Microblog $material): ?int {
+        if ($material instanceof Microblog) {
+            return $material->parent_id;
+        }
+        return null;
+    }
+
+    private function href(Post|Post\Comment|Microblog $material): string {
+        if ($material instanceof Microblog) {
+            return $this->microblogHref($material);
+        }
+        if ($material instanceof Post) {
+            return UrlBuilder::post($material);
+        }
+        if ($material instanceof Post\Comment) {
+            return UrlBuilder::postComment($material);
+        }
+        return '';
+    }
+
+    private function microblogHref(Microblog $material): string {
+        if ($material->parentId) {
+            return route('microblog.view', [$material->parentId]) . '#comment-' . $material->id;
+        }
+        return route('microblog.view', [$material->parentId ?? $material->id]);
+    }
+
+    private function materialType(SearchFilterType $type): string {
+        return match ($type) {
+            SearchFilterType::Post        => 'post',
+            SearchFilterType::PostComment => 'comment',
+            SearchFilterType::Blog        => 'microblog',
+        };
+    }
+}

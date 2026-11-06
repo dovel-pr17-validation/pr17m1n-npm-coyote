@@ -1,0 +1,64 @@
+@use "../../feature/theme/theme" as theme;
+
+.user-status {
+  font-size:     10px;
+  line-height:   12px;
+  padding:       4px 4px 2px;
+  border-radius: 4px;
+  display:       inline-block;
+
+  &.user-status--banned {
+    @include theme.light {
+      color:      #e7000b;
+      background: #ffe2e2;
+    }
+    @include theme.dark {
+      color:      #c7191c;
+      background: #460809;
+    }
+  }
+
+  &.user-status--author {
+    @include theme.light {
+      color:      #2358cc;
+      background: #dee8fa;
+    }
+    @include theme.dark {
+      color:      #3a6bd6;
+      background: #152233;
+    }
+  }
+}
+
+.user-deleted {
+  @include theme.color(#91969c, #5c6166);
+}
+
+.topic-answer {
+  padding:       3px 5px 3px 2px;
+  font-size:     13px;
+  border-radius: 4px;
+  display:       inline-block;
+
+  &.topic-answer--fixed {
+    @include theme.light {
+      color:      #2358cc;
+      background: #dee8fa;
+    }
+    @include theme.dark {
+      color:      #3a6bd6;
+      background: #152233;
+    }
+  }
+
+  &.topic-answer--answered {
+    @include theme.light {
+      color: #014718;
+      background: #e7f7e6;
+    }
+    @include theme.dark {
+      color: #00a538;
+      background: #001407;
+    }
+  }
+}

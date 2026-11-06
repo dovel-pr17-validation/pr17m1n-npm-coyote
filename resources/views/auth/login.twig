@@ -1,0 +1,77 @@
+{% extends 'layout' %}
+{% block title %}Logowanie{{ parent() }}{% endblock %}
+
+{% block header %}
+  {# Remove header #}
+{% endblock %}
+
+{% block breadcrumbs %}
+  {# Remove breadcrumbs #}
+{% endblock %}
+
+{% block fixed %}
+  <div class="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 col-xxl-3 mx-auto">
+      <div class="mb-4">
+        <a href="/">
+          <img
+              class="logo mb-4"
+              alt="4programmers.net"
+              style="height:32px;"
+              src="{{ __dark_theme ? cdn('img/logo.dark.svg') : cdn('img/logo.light.svg') }}"
+          />
+        </a>
+      </div>
+
+      {% if session_has('success') %}
+        <div class="alert alert-success mt-3">
+          {{ icon('alertSuccess') }}
+          {{ session_get('success') }}
+        </div>
+      {% endif %}
+      {% if session_has('error') %}
+        <div class="alert alert-danger mt-3">
+          {{ icon('alertDanger') }}
+          {{ session_get('error') }}
+        </div>
+      {% endif %}
+
+      {% include 'auth.oauth' %}
+
+      {# ten kod jest tutaj na potrzeby pluginu socialize. przekazuje on w GET komunikat bledu #}
+      {# niestety z jakiegos powodu nie mozna tego komunikatu przekazac w sesji #}
+      {% if request().has('error') %}
+        <div class="alert alert-danger">
+          {{ request().get('error') }}
+        </div>
+      {% endif %}
+      <h1 class="my-4 d-block text-center" style="font-size:1.25em;">
+        Zaloguj się na konto
+      </h1>
+      {{ form_start(form) }}
+      {{ form_row(form.name) }}
+      <div class="form-group">
+        {{ form_row(form.password) }}
+        <div class="text-end" style="margin-top:-10px;">
+          <a href="{{ url('Password') }}" class="neon-color-link">
+            Zapomniałeś hasła?
+          </a>
+        </div>
+      </div>
+      <div class="text-center" style="margin-top:-10px;">
+        {{ form_widget(form.submit) }}
+      </div>
+      {{ form_end() }}
+      <div class="text-center mt-4 mb-4">
+        Nie masz konta?
+        <a href="{{ route('register') }}" class="neon-color-link">
+          Zarejestruj się
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  {# Remove footer #}
+{% endblock %}

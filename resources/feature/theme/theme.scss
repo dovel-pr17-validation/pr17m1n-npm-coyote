@@ -1,0 +1,58 @@
+@mixin light {
+  @include scope(theme-light) {@content}
+}
+
+@mixin dark {
+  @include scope(theme-dark) {@content}
+}
+
+@mixin scope($class) {
+  @if & {
+    *:where(html.#{$class}) & {@content}
+  } @else {
+    *:where(html.#{$class}) {@content}
+  }
+}
+
+@mixin both {
+  @content;
+}
+
+@mixin property($property, $light, $dark) {
+  @include light {#{$property}: $light}
+  @include dark {#{$property}: $dark}
+}
+
+@mixin propertyImportant($property, $light, $dark) {
+  @include light {#{$property}: $light !important;}
+  @include dark {#{$property}: $dark !important;}
+}
+
+@mixin var($property, $themedProperty) {
+  @if (type-of($themedProperty) == 'map') {
+    @include property($property, map-get($themedProperty, 'light'), map-get($themedProperty, 'dark'));
+  } @else {
+    @include property($property, $themedProperty, $themedProperty);
+  }
+}
+
+@mixin color($light, $dark) {
+  @include property(color, $light, $dark);
+}
+
+@mixin background($light, $dark) {
+  @include property(background, $light, $dark);
+}
+
+// Deprecated
+@mixin background-theme($light, $dark) {
+  @include background($light, $dark)
+}
+
+@mixin color-theme($light, $dark) {
+  @include color($light, $dark);
+}
+
+@mixin theme {
+  @include both {@content}
+}

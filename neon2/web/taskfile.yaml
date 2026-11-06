@@ -1,0 +1,11 @@
+version: '3'
+
+tasks:
+  bundle:
+    - yarn install
+    - yarn vite build --mode production
+  test:
+    - yarn install
+    - yarn vitest --run
+  typecheck:
+    - yarn tsc --noEmit

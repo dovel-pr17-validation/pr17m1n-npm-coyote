@@ -1,0 +1,10 @@
+{% for subscription in subscriptions %}
+    <tr>
+        <td><a href="{{ route('forum.topic', [subscription.resource.forum.slug, subscription.resource.id, subscription.resource.slug]) }}">{{ subscription.resource.title }}</a></td>
+        <td>{{ subscription.created_at|format_date }}</td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="2" style="text-align: center">Brak obserwowanych wątków.</td>
+    </tr>
+{% endfor %}

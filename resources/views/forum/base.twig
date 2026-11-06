@@ -1,0 +1,17 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+  {{ parent() }}
+
+  <script src="{{ cdn('js/forum.js') }}"></script>
+{% endblock %}
+
+{% block container %}
+  <div id="index">
+    {% block content %}
+    {% endblock %}
+    {% block sidebar %}
+    {% endblock %}
+    <div class="clearfix"></div>
+  </div>
+{% endblock %}

@@ -1,0 +1,72 @@
+<div class="card card-wiki" style="margin-top: 13px">
+  <div class="card-header">
+    <strong>
+      {% for parent in parents %}
+        <a class="wiki-text" title="{{ parent.long_title|default(parent.title) }}" href="{{ url(parent.path) }}">
+          {{ parent.title }}
+        </a>
+
+        {% if not loop.last %}
+          <span class="d-none d-sm-inline">»</span>
+        {% endif %}
+      {% endfor %}
+    </strong>
+  </div>
+
+  <div class="card-body">
+    <article>
+      {% block dropdown %}{% endblock %}
+
+      <header>
+        <h1>
+          <a href="{{ url(wiki.path) }}">
+            {{ wiki.long_title ?: wiki.title }}
+          </a>
+        </h1>
+        {% block author %}
+          {% if author %}
+            <h5>{{ link_to_profile(author) }}</h5>
+          {% endif %}
+        {% endblock %}
+
+        {% block metadata %}
+          <ul class="metadata list-inline">
+            <li title="Data opublikowania" class="date list-inline-item">
+              {{ icon('wikiCreateDate') }}
+              {{ wiki.created_at }}
+            </li>
+            <li title="Data ostatniej zmiany" class="edit-date list-inline-item">
+              {{ icon('wikiLastUpdateDate') }}
+              {{ wiki.updated_at }}
+            </li>
+            <li class="comment list-inline-item">
+              <a href="#box-comment" title="Zobacz komentarze" value="UserComments:{{ wiki.comments|length }}">
+                {{ icon('wikiComments') }}
+                {{ declination(wiki.comments|length, ['komentarz', 'komentarze', 'komentarzy']) }}
+              </a>
+            </li>
+            <li class="counter list-inline-item" value="UserPageVisits:{{ wiki.views }}">
+              {{ icon('wikiViews') }}
+              {{ declination(wiki.views, ['odsłona', 'odsłony', 'odsłon']) }}
+            </li>
+          </ul>
+        {% endblock %}
+      </header>
+
+      {% if wiki.excerpt %}
+        <p>
+          <strong>{{ wiki.excerpt }}</strong>
+        </p>
+        <p class="text-excerpt text-center">
+          <strong>***</strong>
+        </p>
+      {% endif %}
+
+      <div class="wiki-text">
+        {{ wiki.text|raw }}
+      </div>
+
+      {{ render_region('wiki_footer') }}
+    </article>
+  </div>
+</div>

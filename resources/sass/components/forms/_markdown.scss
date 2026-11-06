@@ -1,0 +1,85 @@
+@import "../../../feature/theme/theme";
+
+.editor {
+  padding: .375rem 0;
+  border-radius: .375rem;
+
+  .btn-control {
+    transition: opacity .5s;
+    transition-delay: 350ms;
+  }
+
+  textarea.form-control {
+    border: none;
+  }
+
+  .preview {
+    padding: .375rem 0.75rem;
+    cursor: default;
+  }
+
+  .img-thumbnail img {
+    height: 100px;
+    object-fit: cover;
+  }
+
+  .editor-4play {
+    cursor: text;
+
+    .cm-scroller {
+      overflow: auto;
+
+      .cm-content {
+        min-height: 94px;
+      }
+    }
+  }
+}
+
+// Lista rozwijalna z jezykami kolorowania skladni
+// ------------------------------------------------
+
+.select-menu {
+  padding: 0;
+
+  .select-menu-search {
+    background-color: $gray-lighter;
+    padding: 5px;
+    border-bottom: 2px solid $card-border-color;
+  }
+}
+
+.select-menu-wrapper {
+  overflow-y: scroll;
+  max-height: 150px;
+
+  ul {
+    margin-bottom: 0;
+  }
+
+  li {
+    border-bottom: 1px solid $card-border-color;
+
+    a {
+      color: $gray;
+      display: block;
+      padding: 5px 10px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f6f6f6;
+        text-decoration: none;
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+img.latex {
+  @include dark {
+    filter: invert(1);
+  }
+}

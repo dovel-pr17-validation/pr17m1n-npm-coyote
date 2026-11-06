@@ -1,0 +1,23 @@
+body.theme-dark {
+  .nav.nav-pills {
+    &:before,
+    &:after {
+      display: none;
+    }
+
+    a.nav-item,
+    a.nav-link,
+    {
+      color: #acacac;
+
+      &:before,
+      &:after {
+        display: none;
+      }
+
+      span {
+        color: #acacac;
+      }
+    }
+  }
+}

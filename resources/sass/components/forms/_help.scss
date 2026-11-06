@@ -1,0 +1,32 @@
+.markdown-help {
+  padding: 0.375rem;
+
+  h3 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h4 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  ul li {
+    margin-bottom: 2px;
+  }
+
+  .card-version {
+    font-size: 0.9em;
+    float: right;
+    margin-top: 2px;
+    opacity: 0.2;
+  }
+}

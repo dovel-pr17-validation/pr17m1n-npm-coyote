@@ -1,0 +1,445 @@
+{% extends 'forum.base' %}
+
+{% block title %}{{ model.title ~ (paginationCurrentPage > 1 ? (' - Strona ' ~ paginationCurrentPage)) }}{{ parent() }}{% endblock %}
+{% block description %}{{ description }}{% endblock %}
+
+{% import 'legacyComponents.forms' as forms %}
+{% import 'legacyComponents.modals' as modals %}
+{% from 'titleBanner.titleBanner' import titleBanner %}
+{% from 'campaignBanner.campaignBanner' import campaignBanner %}
+
+{% block content %}
+  {{ schema_topic }}
+
+  <h1 class="topic-title pe-4 neon-legacy">
+    {{ model.title }}
+  </h1>
+  <div class="mb-3">
+    <!-- TODO remove margin if not enabled -->
+    {{ campaignBanner('header', campaign_banners_topic_desktop, campaign_banners_topic_mobile) }}
+  </div>
+  <div class="neon-modern mb-3">
+    {{ titleBanner(title: model.title, crumbs:breadcrumbs) }}
+  </div>
+
+  {% if model.locked_at and model.locker.id %}
+    <p class="alert alert-warning mt-2 mb-2">
+      Wątek zablokowany {{ model.locked_at|format_date }} przez
+      <a class="alert-warning" href="{{ route('profile', [model.locker.id]) }}">
+        {{ model.locker.name }}
+      </a>.
+    </p>
+  {% endif %}
+
+  {% if model.moved_at and model.prevForum.slug %}
+    <p class="alert alert-warning mt-2 mb-2">
+      Wątek przeniesiony {{ model.moved_at|format_date }} z
+      <a class="alert-link" href="{{ route('forum.category', {'forum': model.prevForum.slug}) }}">{{ model.prevForum.name }}</a> przez
+      <a class="alert-link" href="{{ route('profile', [model.mover.id]) }}">{{ model.mover.name }}</a>.
+    </p>
+  {% endif %}
+
+  {% include "forum.partials.top" %}
+
+  <main class="mainbar pt-0">
+    <div id="js-skeleton">
+      <div class="mb-3">
+        {% if paginationManyPages %}
+          <div style="height:31px;"></div>
+        {% endif %}
+      </div>
+      {% for post in posts.data %}
+        <div class="card card-post">
+          <div class="d-none d-lg-block p-2 backport-post-header">
+            <div class="row" style="font-size:12px;">
+              <div class="col-2">
+                <h5 class="mb-0 post-author ms-2">
+                  <a class="username {{ true ? 'neon-color-link' : 'neon-username-author' }}">
+                    {{ post.user.name }}
+                  </a>
+                </h5>
+              </div>
+              <div class="col-10 text-truncate">
+                {{ icon('postWasRead') }}
+                <time>{{ post.created_at }}</time>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="media d-lg-none mb-2">
+              <div class="media-left me-2">
+                <div style="width: 35px; height: 35px"></div>
+              </div>
+
+              <div class="media-body">
+                <div style="height: 20px"></div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="d-none d-lg-block col-lg-2">
+                <div class="d-flex">
+                  <div class="neon-avatar-border">
+                    <div class="position-relative i-70">
+                      {% if post.user.photo %}
+                        <img src="{{ post.user.photo }}"
+                             alt="{{ post.user.name }}"
+                             class="d-block user-avatar"
+                             loading="lazy"
+                             style="width:100%;height:100%;object-fit:cover;object-position:center;">
+                      {% else %}
+                        <div class="user-avatar default-avatar">
+                          <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+                            <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" fill="currentColor">
+                              {{ post.user.initials }}
+                            </text>
+                          </svg>
+                        </div>
+                      {% endif %}
+                      {% if post.user.is_online %}
+                        <div class="is-online"></div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <ul class="post-stats list-unstyled">
+                  <li>
+                    <strong>Rejestracja:</strong>
+                    <small>{{ formatDistanceToNow(post.user.created_at) }}</small>
+                  </li>
+
+                  <li>
+                    <strong>Ostatnio:</strong>
+                    <small>
+                      {{ formatDistanceToNow(post.user.visited_at ? post.user.visited_at : post.user.created_at) }}
+                    </small>
+                  </li>
+                  {% if post.user.location %}
+                    <li>
+                      <strong>Lokalizacja:</strong>
+                      <small>{{ post.user.location }}</small>
+                    </li>
+                  {% endif %}
+                  {% if post.user.allow_count %}
+                    <li>
+                      <strong>Postów:</strong>
+                      <small>
+                        <a title="Znajdź posty tego użytkownika"
+                           :href="`/Forum/User/${post.user.id}`"
+                           style="text-decoration: underline">{{ post.user.posts }}</a>
+                      </small>
+                    </li>
+                  {% endif %}
+                </ul>
+              </div>
+
+              <div class="col-12 col-lg-10">
+                <div class="post-vote">
+                  <strong title="Ocena posta" class="vote-count">{{ post.score }}</strong>
+                </div>
+
+                <div class="post-content">{{ post.html|raw }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-2 py-1 backport-post-footer">
+            <div class="row">
+              <div class="d-none d-lg-block col-lg-2"></div>
+              <div class="col-12 d-flex col-lg-10">
+                <div>
+                  <div class="dropdown d-inline-block">
+                    <span class="post-action" data-bs-toggle="dropdown">
+                      {{ icon('postShare') }}
+                      <span class="d-none d-sm-inline ms-1">Udostępnij</span>
+                    </span>
+                  </div>
+                  {% if (not post.is_locked) or post.permissions.write %}
+                    <span class="post-action">
+                      {{ icon('postComment') }}
+                      <span class="d-none d-sm-inline ms-1">Skomentuj</span>
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="ms-auto">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div id="js-post">
+      <div class="d-flex mb-3">
+        <div class="me-auto" v-if="is_mode_linear">
+          <vue-pagination @change="changePage" :current-page="currentPage" :total-pages="totalPages" class="pagination-sm"></vue-pagination>
+        </div>
+      </div>
+
+      <template v-if="'id' in poll">
+        <vue-poll :poll="poll"></vue-poll>
+      </template>
+
+      <vue-post-wrapper
+          v-if="is_mode_tree"
+          :post="treeTopicPostsFirst"
+          :tree-topic-post-first="true"
+          @reply="reply"
+      ></vue-post-wrapper>
+
+      <div style="margin-left:44px;">
+        {% if is_writeable %}
+          <template v-if="is_mode_tree">
+            <vue-form
+                id="js-submit-form"
+                ref="js-submit-form"
+                v-if="editorRevealed"
+                :tree-answer-post-id="{{ model.first_post_id }}"
+                :post="undefinedPost"
+                @save="savedForm"
+            ></vue-form>
+            <div v-else @click="revealEditor" class="card" style="cursor:text;">
+              <div class="card-body mb-4">
+                Kliknij, aby dodać treść...
+              </div>
+            </div>
+          </template>
+        {% endif %}
+
+        <template v-if="is_mode_tree && treeTopicPostsRemaining.length > 0">
+          {% if treeTopicIsSubtree %}
+            <div class="d-flex justify-content-between mb-4">
+              <div>
+                <a class="btn btn-secondary mt-4" href="{{ treeTopicSeePreviousUrl }}">
+                  {{ icon('treeTopicSeePrevious') }}
+                  Zobacz poprzedni
+                </a>
+              </div>
+              <div>
+                <a class="btn btn-secondary mt-4" href="{{ treeTopicSeeWholeUrl }}">
+                  {{ icon('treeTopicSeeFull') }}
+                  Zobacz cały wątek
+                </a>
+              </div>
+            </div>
+          {% else %}
+            <div class="mb-4">
+              <label for="tree-post-ordering2" class="text-muted">
+                Kolejność postów
+              </label>
+              {{ icon('treeTopicPostOrder') }}
+              <select
+                  id="tree-post-ordering2"
+                  :value="treeTopicOrder"
+                  @change="changeTreeTopicOrder"
+                  class="form-control"
+                  style="width:initial;">
+                <option value="byScore">Najwyżej oceniane</option>
+                <option value="newest">Najnowsze</option>
+                <option value="oldest">Najstarsze</option>
+                <option value="linear">Spłaszczone</option>
+              </select>
+            </div>
+          {% endif %}
+        </template>
+      </div>
+
+      <vue-post-wrapper
+          v-if="is_mode_tree"
+          v-for="treePost in treeTopicPostsRemaining"
+          :key="treePost.post.id"
+          :post="treePost.post"
+          :tree-item="treePost.treeItem"
+          @reply="reply"
+      ></vue-post-wrapper>
+
+      <template v-if="is_mode_linear">
+        <template v-for="(post, index) in linearTopicPosts" :key="post.id">
+          <vue-post-wrapper
+              :post="post"
+              @reply="reply"
+          ></vue-post-wrapper>
+          <vue-shadow-root v-if="index % 10 === 1" :dark="$store.state.theme.darkTheme"></vue-shadow-root>
+        </template>
+      </template>
+
+      <div class="mb-3">
+        <!-- TODO remove margin if not enabled -->
+        {{ campaignBanner('feed', campaign_banners_topic_desktop, campaign_banners_topic_mobile) }}
+      </div>
+
+      <div class="page-pagination d-flex mb-3" v-if="is_mode_linear">
+        <div class="page-page-selector me-auto">
+          <vue-pagination @change="changePage" :current-page="currentPage" :total-pages="totalPages" class="pagination-sm"></vue-pagination>
+        </div>
+
+        <div class="page-page-size-selector">
+          {% include 'forum.partials.per_page' with {label: 'Liczba odpowiedzi na stronę', perPage: paginationPerPage} %}
+        </div>
+      </div>
+
+      {% if is_writeable %}
+        <vue-form
+            id="js-submit-form"
+            ref="js-submit-form"
+            v-if="is_mode_linear"
+            :post="undefinedPost"
+            @save="savedForm"
+        ></vue-form>
+      {% endif %}
+
+      <section class="page-change-category d-flex my-3">
+        {% if user_forums is defined %}
+          {{ form_select('forum', user_forums, forum.slug, {'id': 'js-forum-list', 'class': 'form-control d-inline w-auto', 'data-url': route('forum.home')}) }}
+          <a class="btn" href="javascript:" id="js-reload" rel="nofollow">
+            {{ icon('forumChangeCategory') }}
+          </a>
+        {% endif %}
+      </section>
+
+      {% if not auth_check() %}
+        <div class="d-flex justify-content-center">
+          <div>
+            <div class="alert alert-info">
+              <p class="mb-0">
+                Zarejestruj się i dołącz do największej społeczności programistów w Polsce.
+              </p>
+              <p class="mb-0">
+                Otrzymaj wsparcie, dziel się wiedzą i rozwijaj swoje umiejętności z najlepszymi.
+              </p>
+            </div>
+            <div class="d-flex justify-content-end">
+              <a href="{{ route('register') }}" class="btn btn-primary">
+                Utwórz konto
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <vue-notifications></vue-notifications>
+    </div>
+  </main>
+
+  <script>
+    var forumJobOfferTiles = {{ forumJobOfferTiles|json_encode|raw }};
+    var forumJobOffersHref = {{ forumJobOffersHref|json_encode|raw }};
+    var pagination = {{ posts|json_encode|raw }};
+    var topic = {{ topic|json_encode|raw }};
+    var poll = {{ poll|json_encode|raw }};
+    var forum = {{ forum|json_encode|raw }};
+    var allForums = {{ all_forums|json_encode|raw }};
+    var reasons = {{ reasons|json_encode|raw }};
+    var tags = {{ tags.user|json_encode|raw }};
+    var flags = {{ flags|json_encode|raw }};
+    var emojis = {{ emojis|json_encode|raw }};
+  </script>
+{% endblock %}
+
+{% block sidebar %}
+  {% embed 'forum.partials.sidebar' %}
+    {% from 'boardBanner.boardBanner' import boardBanner %}
+    {% block side_menu %}
+      <div id="js-sidebar" class="box mb-5" v-cloak>
+        {% if not auth_check() %}
+          <div class="d-none d-xl-block">
+            {{ boardBanner(mode: random(['small', 'large'])) }}
+          </div>
+        {% endif %}
+        <div class="box">
+          <h4 class="heading">
+            {{ icon('forumActions') }}
+            Akcje
+          </h4>
+        </div>
+        <ul class="list-style-none text-muted mt-2">
+          <li class="mb-2 pt-1 cursor-pointer" :class="{'on': topic.is_subscribed}" v-if="isAuthorized" @click="subscribe(topic)">
+            <span class="me-1">
+              <vue-icon v-if="topic.is_subscribed" name="topicSubscribed" class="neon-subscribe neon-subscribe--active"></vue-icon>
+              <vue-icon v-else name="topicSubscribe" class="neon-subscribe"></vue-icon>
+            </span>
+            ${ topic.is_subscribed ? 'Zakończ obserwację' : 'Obserwuj wątek' }
+          </li>
+          <li class="mb-2 pt-1 cursor-pointer">
+            <a href="{{ threadStartUrl }}" rel="nofollow">
+              <span class="me-1">{{ icon('topicGoToBeginning') }}</span>
+              Przejdź na początek wątku
+            </a>
+          </li>
+          {% if can('update', forum) %}
+            <li class="mb-2 pt-1 cursor-pointer">
+              <a href="{{ route('forum.stream', [model.id]) }}" title="Zobacz dziennik zdarzeń" rel="nofollow">
+                <span class="me-1">{{ icon('topicLog') }}</span>
+                Dziennik zdarzeń
+              </a>
+            </li>
+          {% endif %}
+          {% if can('update', forum) %}
+            <li class="mb-2 pt-1 cursor-pointer" @click="$refs['update-modal'].open();" title="Kliknij, aby szybko zmienić tytuł wątku">
+              <span class="me-1">{{ icon('topicActionRename') }}</span>
+              Zmień tytuł
+            </li>
+          {% endif %}
+          {% if can('lock', forum) %}
+            <li class="mb-2 pt-1 cursor-pointer" @click="lock" title="Kliknij, aby zablokować wątek">
+              <span class="me-1">
+                <vue-icon name="topicActionUnlock" v-if="topic.is_locked"></vue-icon>
+                <vue-icon name="topicActionLock" v-else></vue-icon>
+              </span>
+              ${ topic.is_locked ? 'Odblokuj wątek' : 'Zablokuj wątek' }
+            </li>
+          {% endif %}
+          {% if can('move', forum) %}
+            <li class="mb-2 pt-1 cursor-pointer" @click="$refs['forum-modal'].open();" title="Przenieść ten temat do innej kategorii forum">
+              <span class="me-1">{{ icon('topicActionMove') }}</span>
+              Przenieś wątek
+            </li>
+          {% endif %}
+          <li class="mb-2 pt-1 cursor-pointer" @click="copyTopicLink">
+            <span class="me-1">{{ icon('topicShare') }}</span>
+            Udostępnij
+          </li>
+        </ul>
+
+        {% if can('move', forum) %}
+          <vue-modal ref="forum-modal">
+            <template v-slot:title>Czy chcesz przenieść?</template>
+            <template v-slot:buttons>
+              <button @click="$refs['forum-modal'].close()" type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+              <vue-button @click="move" :disabled="isProcessing" class="btn btn-danger danger">Tak, przenieś</vue-button>
+            </template>
+            <p>Czy na pewno chcesz przenieść wątek do innej kategorii?</p>
+            <p>
+              <select v-model="forumId" class="form-control form-control-sm">
+                <option v-for="forum in sortedForums" :key="forum.id" :value="forum.id" v-html="forum.name"></option>
+              </select>
+            </p>
+            <p>
+              <vue-select name="reason_id" :options="reasons" v-model="reasonId" class="form-control-sm"
+                          placeholder="-- wybierz --"></vue-select>
+            </p>
+          </vue-modal>
+        {% endif %}
+
+        {% if can('update', forum) %}
+          <vue-modal ref="update-modal">
+            <template v-slot:title>Zmień tytuł</template>
+            <template v-slot:buttons>
+              <button @click="$refs['update-modal'].close()" type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+              <vue-button @click="changeTitle" :disabled="isProcessing" class="btn btn-danger danger">Zmień tytuł</vue-button>
+            </template>
+            <input type="text" name="title" v-model="topic.title" @keydown.enter="changeTitle" class="form-control">
+          </vue-modal>
+        {% endif %}
+      </div>
+      <div class="mb-5">
+        {{ globalViewers|raw }}
+      </div>
+      <div class="mb-5">
+        {{ localViewers|raw }}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

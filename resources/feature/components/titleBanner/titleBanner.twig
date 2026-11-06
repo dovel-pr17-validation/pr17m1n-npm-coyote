@@ -1,0 +1,46 @@
+{% macro titleBanner(title, crumbs=null) %}
+  <div class="title-banner {{ false ? 'title-banner--brand' }} neon-rounded p-4">
+    {% if crumbs %}
+      <ul class="title-banner__crumbs">
+        <li class="title-banner__crumbs-item">
+          <a href="{{ crumbs.rootHref }}" class="d-none d-sm-inline-block">
+            {{ crumbs.rootTitle }}
+          </a>
+          <a href="{{ crumbs.rootHref }}" class="d-inline-block d-sm-none">
+            4p
+          </a>
+        </li>
+        {% for crumb in crumbs.breadcrumbs %}
+          <li class="title-banner__crumbs-separator">
+            »
+          </li>
+          <li class="title-banner__crumbs-item">
+            <a href="{{ crumb.href }}">
+              {{ crumb.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <span class="d-inline-block">
+        4programmers
+      </span>
+    {% endif %}
+    <div class="title-banner__title">{{ title }}</div>
+  </div>
+{% endmacro %}
+
+{% macro boardBanner() %}
+  <div class="board-banner">
+    <p class="board-banner__title">
+      Wyszukiwarka pracy
+    </p>
+    <p class="board-banner__subtitle">
+      Oferty pracy, których nie znajdziesz nigdzie indziej – i anonimowe rozmowy o wszystkim, co naprawdę dzieje się w
+      IT: <b>zarobki, zwolnienia, rekrutacyjne absurdy, opinie o firmach i koniec eldorado?</b>
+    </p>
+    <a class="btn btn-primary">
+      Przeglądaj oferty
+    </a>
+  </div>
+{% endmacro %}

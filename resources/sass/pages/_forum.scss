@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+#index {
+  position: relative;
+  padding-right: 20%;
+
+  > h1 {
+    margin-top: 0;
+  }
+
+  @include media-breakpoint-down(xl) {
+    padding-right: 0;
+  }
+}
+
+.mainbar {
+  width: 100%;
+  float: left;
+  padding-top: 15px;
+
+  .nav {
+    margin-bottom: 15px;
+  }
+}
+
+// Stronnicowanie na forum (dodanie marginesow)
+// ----------------------------------------------
+
+.pagination {
+  margin: 5px 0 0 0;
+}
+
+
+// Menu po prawej stronie w pasku narzedziowym forum
+// ------------------------------------------------------------------------------------
+
+#sidebar {
+  float: right;
+  width: 23%;
+  margin-right: -25%;
+
+  @include media-breakpoint-down(xl) {
+    display: none;
+    position: absolute;
+    z-index: 101;
+    font-size: .9em;
+    right: 25%;
+    padding: 6px 10px;
+    width: 45%; // na urzadzeniach mobilnych rozszerzamy to okno aby cokolwiek bylo tam widac
+    top: 48px !important; // funkcja sticky-aside zmieni {top}, myśląc że element jest sticky
+  }
+
+  @include media-breakpoint-down(sm) {
+    width: 65%;
+  }
+}
+
+// Przycisk do ukrywania menu bocznego
+// -------------------------------------------------------------------------------------------
+
+#btn-toggle-sidebar {
+  position: absolute;
+  top: 0;
+  font-size: 18px;
+  right: 0;
+  color: $gray;
+}
+
+.side-menu {
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 0 9px;
+
+    a {
+      color: $gray-dark;
+      text-shadow: 1px 1px #FFF;
+      font-size: 11px;
+      padding: 1px 0 1px 21px;
+      opacity: .9;
+
+      &:hover {
+        opacity: 1;
+        color: $primary;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+// Licznik watkow w danym dziale
+// ----------------------------------
+
+#box-count {
+  color: lighten($gray-light, 10%);
+  margin: 5px 0 15px 0;
+
+  strong {
+    font-size: 270%;
+    display: block;
+  }
+
+  span {
+    letter-spacing: 2px;
+    font-size: 90%;
+  }
+}
+

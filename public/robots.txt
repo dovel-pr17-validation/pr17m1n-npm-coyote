@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /User/
+Disallow: /Search
+Sitemap: https://4programmers.net/sitemap
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: proximic
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: sentibot
+Disallow: /

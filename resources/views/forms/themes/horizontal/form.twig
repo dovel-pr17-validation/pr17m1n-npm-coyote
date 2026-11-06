@@ -1,0 +1,5 @@
+{% include 'forms.themes.horizontal.form_widget' %}
+    {% for field in fields %}
+        {{ form_row(field) }}
+    {% endfor %}
+{{ form_close() }}

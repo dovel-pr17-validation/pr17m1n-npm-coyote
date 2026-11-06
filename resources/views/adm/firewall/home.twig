@@ -1,0 +1,15 @@
+{% extends 'adm.base' %}
+{% block title %}Lista zablokowanych użytkowników {{ parent() }}{% endblock %}
+
+{% block card %}
+  <p class="p-3">
+    Moderatorze, pamiętaj, że naszym celem <b>nie jest</b> karanie użytkowników działających złośliwie,
+    lecz wywieranie na nich pozytywnego wpływu, przynoszącego korzyść całej społeczności 4programmers.
+  </p>
+  {{ grid(grid) }}
+{% endblock %}
+
+{% block body %}
+  {{ parent() }}
+  {% include 'adm.partials.geo-ip' %}
+{% endblock %}

@@ -1,0 +1,53 @@
+body.theme-dark {
+  .employer {
+    color: #acacac;
+  }
+
+  #job-offer.card-body {
+    .media {
+      .media-body {
+        section {
+          border-bottom-color: #2f2f2f;
+        }
+      }
+
+      .requirements strong {
+        border-bottom-color: #2f2f2f;
+      }
+    }
+  }
+
+  #plan-table {
+    .plan-benefits .plan-benefit {
+      border-bottom-color: #2f2f2f;
+    }
+
+    .plan {
+      background-color: #1a1a1a;
+      border-color: #2f2f2f;
+
+      .plan-header {
+        background: rgba(255, 255, 255, 0.03);
+      }
+    }
+
+    .plan-benefits .plan-benefit,
+    .plan-features > li {
+      border-bottom-color: #2f2f2f;
+    }
+  }
+
+  #form-fixed {
+    background-color: #101010;
+    border-top-color: #2f2f2f;
+
+    button.next-tab {
+      color: #eee;
+    }
+  }
+
+  .job-form .col-form-label,
+  .job-form .checkbox label {
+    color: #acacac;
+  }
+}

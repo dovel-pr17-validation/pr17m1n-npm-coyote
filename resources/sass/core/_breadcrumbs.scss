@@ -1,0 +1,51 @@
+@use "../../feature/lookAndFeel/style-guide" as style;
+@use "../../feature/theme/theme" as theme;
+
+.breadcrumb-container {
+  display:       none;
+
+  .scrolled-down & {
+    display: block;
+  }
+
+  position:      fixed;
+  top:           54px;
+  z-index:       4;
+  margin-left:   -0.75rem;
+  padding-left:  0.75rem;
+  padding-right: 0.75rem;
+  max-width:     100%;
+
+  .breadcrumb-list {
+    font-size:                  14px;
+    font-weight:                500;
+    @include theme.property(color, #5c6066, #767d84);
+    @include theme.property(background, #f5f7fa, #121314);
+    @include theme.property(border,
+            1px solid #eaecf1,
+            1px solid #0a0a0b);
+    border-top:                 none !important;
+    border-bottom-left-radius:  8px;
+    border-bottom-right-radius: 8px;
+    padding:                    4px 8px;
+    white-space:                nowrap;
+    overflow:                   hidden;
+    text-overflow:              ellipsis;
+    max-width:                  100%;
+
+    .breadcrumb-list-item {
+      &:not(:last-child) {
+        &:after {
+          content:     '/';
+          padding:     0 4px;
+          color:       style.$green-500;
+          font-weight: 600;
+        }
+      }
+
+      .leaf {
+        font-weight: bold;
+      }
+    }
+  }
+}

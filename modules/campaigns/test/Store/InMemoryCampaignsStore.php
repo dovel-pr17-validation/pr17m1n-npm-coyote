@@ -1,0 +1,136 @@
+<?php
+namespace Test\Modules\Campaigns\Store;
+
+use Libs\Arrays\arrays;
+use Modules\Campaigns\Store\Campaign;
+use Modules\Campaigns\Store\CampaignPayload;
+use Modules\Campaigns\Store\CampaignsStore;
+use Modules\Campaigns\Store\CampaignVariant;
+use Modules\Campaigns\Store\VariantPayload;
+
+class InMemoryCampaignsStore implements CampaignsStore {
+    /** @var int[] */
+    private array $campaignIds = [];
+    /** @var CampaignPayload[] */
+    private array $campaignPayloads = [];
+    /** @var int[][] */
+    private array $campaignVariants = [];
+    /** @var VariantPayload[] */
+    private array $variantPayloads = [];
+    /** @var int[] */
+    private array $variantViews = [];
+    /** @var int[] */
+    private array $variantClicks = [];
+    /** @var int[] */
+    private array $variantExposures = [];
+    /** @var int[] */
+    private array $variantBlocked = [];
+    /** @var bool[] */
+    private array $variantEnabled = [];
+    private int $campaignIdSeq = 1;
+    private int $variantIdSeq = 1;
+
+    public function createCampaign(CampaignPayload $payload): int {
+        $newCampaignId = $this->campaignIdSeq++;
+        $this->campaignIds[] = $newCampaignId;
+        $this->campaignPayloads[$newCampaignId] = $payload;
+        $this->campaignVariants[$newCampaignId] = [];
+        return $newCampaignId;
+    }
+
+    public function listCampaigns(): array {
+        return $this->campaignIds
+                |> arrays::map($this->campaignObject(...))
+                |> arrays::values();
+    }
+
+    public function findCampaign(int $campaignId): ?Campaign {
+        if ($this->campaignExists($campaignId)) {
+            return $this->campaignObject($campaignId);
+        }
+        return null;
+    }
+
+    private function campaignObject(int $campaignId): Campaign {
+        return new Campaign(
+            $campaignId,
+            $this->campaignPayloads[$campaignId],
+            $this->campaignVariants($campaignId));
+    }
+
+    private function campaignVariants(int $campaignId): array {
+        return $this->campaignVariants[$campaignId] |> arrays::map($this->campaignVariant(...));
+    }
+
+    private function campaignVariant(int $variantId): CampaignVariant {
+        return new CampaignVariant(
+            $variantId,
+            $this->variantViews[$variantId],
+            $this->variantClicks[$variantId],
+            $this->variantExposures[$variantId],
+            $this->variantBlocked[$variantId],
+            $this->variantPayloads[$variantId],
+            $this->variantEnabled[$variantId]);
+    }
+
+    public function updateCampaign(int $campaignId, CampaignPayload $payload): bool {
+        if ($this->campaignExists($campaignId)) {
+            $this->campaignPayloads[$campaignId] = $payload;
+            return true;
+        }
+        return false;
+    }
+
+    public function createVariant(int $campaignId, VariantPayload $payload): ?int {
+        if (!$this->campaignExists($campaignId)) {
+            return null;
+        }
+        $newVariantId = $this->variantIdSeq++;
+        $this->campaignVariants[$campaignId][] = $newVariantId;
+        $this->variantViews[$newVariantId] = 0;
+        $this->variantClicks[$newVariantId] = 0;
+        $this->variantExposures[$newVariantId] = 0;
+        $this->variantBlocked[$newVariantId] = 0;
+        $this->variantPayloads[$newVariantId] = $payload;
+        $this->variantEnabled[$newVariantId] = true;
+        return $newVariantId;
+    }
+
+    public function setVariantEnabled(int $variantId, bool $enabled): void {
+        $this->variantEnabled[$variantId] = $enabled;
+    }
+
+    public function viewVariant(int $variantId): void {
+        $this->variantViews[$variantId]++;
+    }
+
+    public function clickVariant(int $variantId): void {
+        $this->variantClicks[$variantId]++;
+    }
+
+    public function exposeVariant(int $variantId): void {
+        $this->variantExposures[$variantId]++;
+    }
+
+    public function blockVariant(int $variantId): void {
+        $this->variantBlocked[$variantId]++;
+    }
+
+    private function campaignExists(int $campaignId): bool {
+        return \in_array($campaignId, $this->campaignIds);
+    }
+
+    public function findCampaignRedirectUrl(int $variantId): ?string {
+        foreach ($this->listCampaigns() as $campaign) {
+            if ($this->campaignHasVariant($campaign, $variantId)) {
+                return $campaign->payload->redirectUrl;
+            }
+        }
+        return null;
+    }
+
+    private function campaignHasVariant(Campaign $campaign, int $variantId): bool {
+        return array_any($campaign->variants,
+            fn(CampaignVariant $variant) => $variant->id === $variantId);
+    }
+}

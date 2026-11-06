@@ -1,0 +1,50 @@
+name: Legacy tests
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+
+    concurrency:
+      group: tests
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup config
+        run: cp .env.default .env
+
+      - name: Run docker containers
+        run: docker compose -f docker-compose.yaml -f docker-compose.acceptance.yaml up -d
+        env:
+          STRIPE_KEY: ${{ secrets.STRIPE_KEY }}
+          STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+          STRIPE_ENDPOINT_SECRET: ${{ secrets.STRIPE_ENDPOINT_SECRET }}
+          GOOGLE_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_KEY }}
+          ACCEPTANCE_TEST: acceptance
+
+      - name: Setup owner
+        run: sudo chown -R packer:packer ./ # User with UID 1000 on host machine
+
+      - name: Install coyote server
+        run: make install-server
+
+      - name: Run neon client unit tests
+        run: docker compose exec -T php bash -c 'cd neon2/web/ && yarn install && yarn run vitest'
+
+      - name: Bundle neon client
+        run: docker compose exec -T php bash -c 'cd neon2/web/ && yarn install && yarn vite build --mode production'
+
+      - name: Run neon acceptance tests
+        run: docker compose exec -T php bash -c 'cd neon2/acceptance/ && yarn install && yarn run playwright install chrome && yarn run playwright test'
+
+      - name: Run neon client static type check
+        run: docker compose exec -T php bash -c 'cd neon2/web/ && yarn install && yarn tsc --noEmit'
+
+      - name: Bundle coyote client
+        run: make install-client

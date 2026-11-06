@@ -1,0 +1,44 @@
+{% for job in jobs %}
+  <div class="media text-truncate mb-2">
+    <a class="media-link"
+       href="{{ route('neon.jobOffer.show', [job.slug, job.id]) }}"
+       title="{{ job.title }}">
+      <div class="me-2 i-45 d-none d-xl-inline-block">
+        {% if job.firm.logo %}
+          <img src="{{ logo(job.firm.logo) }}" alt="{{ job.firm.name }}" style="max-width:100%;max-height:100%;">
+        {% else %}
+          <div class="neon-placeholder h-100 d-flex justify-content-center align-items-center">
+            {{ icon('jobOfferMissingLogo') }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="media-body">
+        <h5 class="mb-1 neon-color-link">
+          {{ job.title|raw }}
+        </h5>
+        <p>
+          <span class="employer">{{ job.firm.name }}</span>
+          <small class="text-muted">
+            {% include 'job.partials.location' with {locations: job.locations, linkable: false} %}
+          </small>
+        </p>
+        {% if job.salary_from or job.salary_to %}
+          <p class="my-2">
+            {% include 'job.partials.salary' %}
+          </p>
+        {% endif %}
+        {% if job.tags %}
+          <ul class="tag-clouds tag-clouds-xs">
+            {% for tag in job.tags[0:3] %}
+              <li>
+                <span class="neon-tag {{ tag in selectedTags ? 'selectedTag' }}">
+                  {{ tag }}
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </a>
+  </div>
+{% endfor %}

@@ -1,0 +1,21 @@
+{% set data = {} %}
+{% set linkable = linkable is defined ? linkable : true %}
+
+{% for location in locations %}
+    {% if location.city %}
+        {% set label = location.label ?: location.city %}
+        {% set data = data|merge(linkable ? [link_to_route('job.city', label, [location.city], {'title': 'Znajdź oferty z miasta ' ~ location.city})] : [label]) %}
+    {% endif %}
+{% endfor %}
+
+{{ data|join(' • ')|raw }}
+
+{% if job.is_remote %}
+    {% set label = job.remote_range ? "(#{job.remote_range}% pracy zdalnej)" : '(praca zdalna)' %}
+
+    {% if linkable %}
+        <a href="{{ route('job.remote') }}">{{ label }}</a>
+    {% else %}
+        {{ label }}
+    {% endif %}
+{% endif %}
