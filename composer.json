@@ -31,7 +31,7 @@
     "intervention/image": "^3.6.3",
     "jenssegers/agent": "^v2.6.4",
     "laravel-notification-channels/webpush": "^10.2.0",
-    "laravel/framework": "^v13.16.1",
+    "laravel/framework": "^v13.40.0",
     "laravel/legacy-factories": "^1.1",
     "laravel/passport": "^v13.7.5",
     "laravel/socialite": "^v5.28.0",
