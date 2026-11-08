@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eba4b816a0932a5e1c8acde0c3fe91c6",
+    "content-hash": "bd4dabf3498084e514f2e907b8c5f8ba",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1107,7 +1107,8 @@
                 "issues": "https://github.com/elastic/elasticsearch-php/issues",
                 "source": "https://github.com/elastic/elasticsearch-php/tree/v7.17.3"
             },
-            "time": "2025-07-14T09:07:02+00:00"
+            "time": "2025-07-14T09:07:02+00:00",
+            "published-time": "2025-07-14T09:21:03+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -1217,7 +1218,8 @@
             "support": {
                 "source": "https://github.com/ezimuel/guzzlestreams/tree/4.1.0"
             },
-            "time": "2025-08-05T06:44:46+00:00"
+            "time": "2025-08-05T06:44:46+00:00",
+            "published-time": "2025-08-05T06:47:05+00:00"
         },
         {
             "name": "ezimuel/ringphp",
@@ -1274,7 +1276,8 @@
             "support": {
                 "source": "https://github.com/ezimuel/ringphp/tree/1.4.1"
             },
-            "time": "2026-02-11T16:42:15+00:00"
+            "time": "2026-02-11T16:42:15+00:00",
+            "published-time": "2026-02-11T16:44:26+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -6510,7 +6513,8 @@
             "support": {
                 "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
-            "time": "2024-09-11T13:17:53+00:00"
+            "time": "2024-09-11T13:17:53+00:00",
+            "published-time": "2024-09-11T13:21:14+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -7039,7 +7043,8 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2025-08-19T18:57:03+00:00"
+            "time": "2025-08-19T18:57:03+00:00",
+            "published-time": "2025-08-19T19:13:36+00:00"
         },
         {
             "name": "sentry/sentry",
@@ -14164,6 +14169,6 @@
         "ext-libxml": "*",
         "ext-simplexml": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.2.0"
 }

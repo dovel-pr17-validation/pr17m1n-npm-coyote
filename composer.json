@@ -20,7 +20,7 @@
     "ext-simplexml": "*",
     "ddeboer/vatin": "^2.2",
     "doctrine/dbal": "^3.0",
-    "elasticsearch/elasticsearch": "~v7.17.2",
+    "elasticsearch/elasticsearch": "~v7.17.3",
     "erusev/parsedown": "^1.7",
     "ezyang/htmlpurifier": "^v4.14.0",
     "filp/whoops": "^2.3",
