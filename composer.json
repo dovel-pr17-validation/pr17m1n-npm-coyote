@@ -50,7 +50,7 @@
     "twilio/sdk": "^8.7"
   },
   "require-dev": {
-    "behat/behat": "^3.33",
+    "behat/behat": "^3.34.0",
     "fakerphp/faker": "^1.15",
     "laravel/dusk": "^v8.6.0",
     "mockery/mockery": "^1.4",
